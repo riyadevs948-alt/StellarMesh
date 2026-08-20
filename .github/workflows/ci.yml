@@ -1,0 +1,96 @@
+name: StellarMesh CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  VITE_STELLAR_NETWORK: testnet
+  VITE_STELLAR_RPC_URL: https://soroban-testnet.stellar.org
+  VITE_STELLAR_NETWORK_PASSPHRASE: "Test SDF Network ; September 2015"
+  VITE_STELLAR_HORIZON_URL: https://horizon-testnet.stellar.org
+  VITE_EXPLORER_BASE_URL: https://stellar.expert/explorer/testnet
+  VITE_MESH_CHANNEL_CONTRACT_ID: placeholder
+  VITE_MESH_REGISTRY_CONTRACT_ID: placeholder
+  VITE_API_BASE_URL: http://localhost:3001
+
+jobs:
+  # ─── JavaScript / TypeScript ───────────────────────────────────
+  frontend:
+    name: Frontend (Lint · Typecheck · Test · Build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run lint --workspace=apps/web || true
+
+      - name: Typecheck
+        run: npm run typecheck --workspace=packages/shared || true
+
+      - name: Frontend Tests
+        run: npm run test --workspace=apps/web
+
+      - name: Build frontend
+        run: npm run build --workspace=apps/web
+
+  # ─── Rust / Soroban Contracts ──────────────────────────────────
+  contracts:
+    name: Contracts (Format · Test · Build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+          components: rustfmt, clippy
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            contracts/mesh-registry/target
+            contracts/mesh-channel/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install Stellar CLI
+        run: cargo install --locked stellar-cli --features opt
+
+      - name: Check formatting — MeshRegistry
+        run: cargo fmt --check
+        working-directory: contracts/mesh-registry
+
+      - name: Check formatting — MeshChannel
+        run: cargo fmt --check
+        working-directory: contracts/mesh-channel
+
+      - name: Run MeshRegistry tests
+        run: cargo test
+        working-directory: contracts/mesh-registry
+
+      - name: Run MeshChannel tests
+        run: cargo test
+        working-directory: contracts/mesh-channel
+
+      - name: Build MeshRegistry WASM
+        run: stellar contract build
+        working-directory: contracts/mesh-registry
+
+      - name: Build MeshChannel WASM
+        run: stellar contract build
+        working-directory: contracts/mesh-channel

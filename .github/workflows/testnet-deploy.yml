@@ -1,0 +1,156 @@
+name: Deploy to Testnet
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy-contracts:
+    name: Deploy Soroban Contracts to Testnet
+    runs-on: ubuntu-latest
+    outputs:
+      registry_id: ${{ steps.deploy-registry.outputs.contract_id }}
+      channel_id: ${{ steps.deploy-channel.outputs.contract_id }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-deploy
+
+      - name: Install Stellar CLI
+        run: cargo install --locked stellar-cli --features opt
+
+      - name: Setup Stellar identity
+        env:
+          STELLAR_SECRET_KEY: ${{ secrets.STELLAR_SECRET_KEY }}
+        run: |
+          stellar keys add deployer --secret-key "$STELLAR_SECRET_KEY"
+
+      - name: Build contracts
+        run: |
+          (cd contracts/mesh-registry && stellar contract build)
+          (cd contracts/mesh-channel && stellar contract build)
+
+      - name: Deploy MeshRegistry
+        id: deploy-registry
+        env:
+          STELLAR_SECRET_KEY: ${{ secrets.STELLAR_SECRET_KEY }}
+        run: |
+          CONTRACT_ID=$(stellar contract deploy \
+            --wasm contracts/mesh-registry/target/wasm32-unknown-unknown/release/mesh_registry.wasm \
+            --source deployer \
+            --network testnet \
+            --rpc-url https://soroban-testnet.stellar.org \
+            --network-passphrase "Test SDF Network ; September 2015")
+          echo "contract_id=$CONTRACT_ID" >> $GITHUB_OUTPUT
+          echo "MeshRegistry deployed: $CONTRACT_ID"
+
+      - name: Deploy MeshChannel
+        id: deploy-channel
+        env:
+          STELLAR_SECRET_KEY: ${{ secrets.STELLAR_SECRET_KEY }}
+        run: |
+          CONTRACT_ID=$(stellar contract deploy \
+            --wasm contracts/mesh-channel/target/wasm32-unknown-unknown/release/mesh_channel.wasm \
+            --source deployer \
+            --network testnet \
+            --rpc-url https://soroban-testnet.stellar.org \
+            --network-passphrase "Test SDF Network ; September 2015")
+          echo "contract_id=$CONTRACT_ID" >> $GITHUB_OUTPUT
+          echo "MeshChannel deployed: $CONTRACT_ID"
+
+      - name: Initialize MeshRegistry
+        env:
+          STELLAR_SECRET_KEY: ${{ secrets.STELLAR_SECRET_KEY }}
+          ADMIN_ADDRESS: ${{ secrets.ADMIN_ADDRESS }}
+        run: |
+          stellar contract invoke \
+            --id ${{ steps.deploy-registry.outputs.contract_id }} \
+            --source deployer \
+            --network testnet \
+            --rpc-url https://soroban-testnet.stellar.org \
+            --network-passphrase "Test SDF Network ; September 2015" \
+            -- initialize \
+            --admin "$ADMIN_ADDRESS"
+
+      - name: Initialize MeshChannel
+        env:
+          STELLAR_SECRET_KEY: ${{ secrets.STELLAR_SECRET_KEY }}
+          ADMIN_ADDRESS: ${{ secrets.ADMIN_ADDRESS }}
+        run: |
+          stellar contract invoke \
+            --id ${{ steps.deploy-channel.outputs.contract_id }} \
+            --source deployer \
+            --network testnet \
+            --rpc-url https://soroban-testnet.stellar.org \
+            --network-passphrase "Test SDF Network ; September 2015" \
+            -- initialize \
+            --admin "$ADMIN_ADDRESS" \
+            --registry-id "${{ steps.deploy-registry.outputs.contract_id }}"
+
+      - name: Generate contract config
+        run: |
+          cat > deployed-contracts.json << EOF
+          {
+            "network": "testnet",
+            "deployedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "meshRegistry": "${{ steps.deploy-registry.outputs.contract_id }}",
+            "meshChannel": "${{ steps.deploy-channel.outputs.contract_id }}"
+          }
+          EOF
+          cat deployed-contracts.json
+
+      - name: Upload contract config artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployed-contracts
+          path: deployed-contracts.json
+
+  deploy-frontend:
+    name: Deploy Frontend to Vercel
+    runs-on: ubuntu-latest
+    needs: deploy-contracts
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build frontend
+        env:
+          VITE_STELLAR_NETWORK: testnet
+          VITE_STELLAR_RPC_URL: https://soroban-testnet.stellar.org
+          VITE_STELLAR_NETWORK_PASSPHRASE: "Test SDF Network ; September 2015"
+          VITE_STELLAR_HORIZON_URL: https://horizon-testnet.stellar.org
+          VITE_MESH_REGISTRY_CONTRACT_ID: ${{ needs.deploy-contracts.outputs.registry_id }}
+          VITE_MESH_CHANNEL_CONTRACT_ID: ${{ needs.deploy-contracts.outputs.channel_id }}
+          VITE_EXPLORER_BASE_URL: https://stellar.expert/explorer/testnet
+        run: npm run build --workspace=apps/web
+
+      - name: Deploy to Vercel
+        if: ${{ secrets.VERCEL_TOKEN != '' }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          npm install -g vercel
+          vercel --prod --token "$VERCEL_TOKEN"
