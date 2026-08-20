@@ -1,0 +1,50 @@
+{
+  "name": "@stellar-mesh/web",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@stellar-mesh/shared": "*",
+    "@stellar-mesh/voucher-protocol": "*",
+    "@stellar-mesh/stellar-client": "*",
+    "@stellar/freighter-api": "^3.0.0",
+    "@stellar/stellar-sdk": "^13.3.0",
+    "@tanstack/react-query": "^5.67.0",
+    "html5-qrcode": "^2.3.8",
+    "idb": "^8.0.1",
+    "qrcode": "^1.5.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.5.2",
+    "react-router-dom": "^6.30.0",
+    "zustand": "^5.0.4",
+    "zod": "^3.24.2",
+    "lucide-react": "^0.473.0",
+    "clsx": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.21.0",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3",
+    "vite": "^6.2.0",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "jsdom": "^26.1.0"
+  }
+}
