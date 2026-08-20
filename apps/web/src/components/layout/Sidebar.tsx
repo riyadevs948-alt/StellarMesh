@@ -8,7 +8,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import clsx from 'clsx';
-import { useAppStore, useIsOffline, useWallet } from '../store/app.store';
+import { useAppStore, useIsOffline, useWallet } from '../../store/app.store';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, exact: true },

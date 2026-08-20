@@ -5,7 +5,7 @@
 // ============================================================
 import { VoucherRepo, SettlementAttemptRepo } from './db';
 import { buildPaymentTransaction, submitTransaction } from './stellar';
-import { signTransactionWithFreighter } from '../../../packages/stellar-client/src/freighter';
+import { signTransactionWithFreighter } from '@stellar-mesh/stellar-client';
 import { useAppStore } from '../store/app.store';
 import type { Voucher, SettlementAttempt, SettlementStatus } from '@stellar-mesh/shared';
 import { stroopsToXlm } from '@stellar-mesh/voucher-protocol';

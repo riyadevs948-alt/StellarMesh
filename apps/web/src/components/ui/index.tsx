@@ -229,7 +229,7 @@ export function ErrorBanner({ message, onRetry }: { message: string; onRetry?: (
 // ─── Transaction Hash Display ─────────────────────────────────
 
 import { ExternalLink } from 'lucide-react';
-import { explorerTxUrl } from '../lib/stellar';
+import { explorerTxUrl } from '../../lib/stellar';
 
 export function TxHashDisplay({ txHash }: { txHash: string }) {
   const short = `${txHash.slice(0, 8)}...${txHash.slice(-8)}`;
