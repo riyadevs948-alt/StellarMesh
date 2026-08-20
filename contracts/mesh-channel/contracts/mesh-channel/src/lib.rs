@@ -1,10 +1,8 @@
 #![no_std]
 
 use soroban_sdk::{
-    contract, contractimpl, contracttype, contracterror,
-    Address, Env, Bytes, BytesN, String, Symbol, Vec,
-    symbol_short, token,
-    crypto::Hash,
+    contract, contracterror, contractimpl, contracttype, crypto::Hash, symbol_short, token,
+    Address, Bytes, BytesN, Env, String, Symbol, Vec,
 };
 
 // ============================================================
@@ -31,8 +29,8 @@ pub enum DataKey {
     RegistryId,
     Initialized,
     Channel(BytesN<32>),
-    UsedNonce(BytesN<32>, u64),  // (channel_id, sequence)
-    UsedVoucher(Bytes),           // voucher_id bytes
+    UsedNonce(BytesN<32>, u64), // (channel_id, sequence)
+    UsedVoucher(Bytes),         // voucher_id bytes
     ChannelCount,
     XlmAsset,
 }
@@ -104,13 +102,13 @@ pub struct VoucherPayload {
     pub amount: i128,
     pub sequence: u64,
     pub expires_at: u64,
-    pub voucher_id: Bytes,      // canonical hash hex as bytes
-    pub signed_payload: Bytes,  // the canonical bytes that were signed
+    pub voucher_id: Bytes,     // canonical hash hex as bytes
+    pub signed_payload: Bytes, // the canonical bytes that were signed
 }
 
 // TTL constants
 const PERSISTENT_TTL_EXTEND: u32 = 518_400; // ~30 days
-const TEMP_TTL: u32 = 17_280;               // ~1 day
+const TEMP_TTL: u32 = 17_280; // ~1 day
 
 // ============================================================
 // Contract
@@ -123,26 +121,24 @@ impl MeshChannel {
     // ----------------------------------------------------------
     // Initialize
     // ----------------------------------------------------------
-    pub fn initialize(
-        env: Env,
-        admin: Address,
-        registry_id: Address,
-    ) -> Result<(), ChannelError> {
+    pub fn initialize(env: Env, admin: Address, registry_id: Address) -> Result<(), ChannelError> {
         if env.storage().instance().has(&DataKey::Initialized) {
             return Err(ChannelError::AlreadyInitialized);
         }
         admin.require_auth();
 
         env.storage().instance().set(&DataKey::Admin, &admin);
-        env.storage().instance().set(&DataKey::RegistryId, &registry_id);
+        env.storage()
+            .instance()
+            .set(&DataKey::RegistryId, &registry_id);
         env.storage().instance().set(&DataKey::Initialized, &true);
         env.storage().instance().set(&DataKey::ChannelCount, &0u32);
-        env.storage().instance().extend_ttl(PERSISTENT_TTL_EXTEND, PERSISTENT_TTL_EXTEND);
+        env.storage()
+            .instance()
+            .extend_ttl(PERSISTENT_TTL_EXTEND, PERSISTENT_TTL_EXTEND);
 
-        env.events().publish(
-            (symbol_short!("ch_init"), symbol_short!("admin")),
-            admin,
-        );
+        env.events()
+            .publish((symbol_short!("ch_init"), symbol_short!("admin")), admin);
 
         Ok(())
     }
@@ -184,7 +180,11 @@ impl MeshChannel {
         // Generate deterministic channel ID
         let channel_id = Self::generate_channel_id(&env, &payer, &payee, expires_at);
 
-        if env.storage().persistent().has(&DataKey::Channel(channel_id.clone())) {
+        if env
+            .storage()
+            .persistent()
+            .has(&DataKey::Channel(channel_id.clone()))
+        {
             return Err(ChannelError::ChannelAlreadyExists);
         }
 
@@ -201,7 +201,9 @@ impl MeshChannel {
             sequence_counter: 0,
         };
 
-        env.storage().persistent().set(&DataKey::Channel(channel_id.clone()), &channel);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Channel(channel_id.clone()), &channel);
         env.storage().persistent().extend_ttl(
             &DataKey::Channel(channel_id.clone()),
             PERSISTENT_TTL_EXTEND,
@@ -209,8 +211,14 @@ impl MeshChannel {
         );
 
         // Update count
-        let count: u32 = env.storage().instance().get(&DataKey::ChannelCount).unwrap_or(0);
-        env.storage().instance().set(&DataKey::ChannelCount, &(count + 1));
+        let count: u32 = env
+            .storage()
+            .instance()
+            .get(&DataKey::ChannelCount)
+            .unwrap_or(0);
+        env.storage()
+            .instance()
+            .set(&DataKey::ChannelCount, &(count + 1));
 
         // Emit channel_created event
         env.events().publish(
@@ -247,7 +255,9 @@ impl MeshChannel {
         }
         if env.ledger().timestamp() >= channel.expires_at {
             channel.status = ChannelStatus::Expired;
-            env.storage().persistent().set(&DataKey::Channel(channel_id.clone()), &channel);
+            env.storage()
+                .persistent()
+                .set(&DataKey::Channel(channel_id.clone()), &channel);
             return Err(ChannelError::ChannelExpired);
         }
         if amount <= 0 {
@@ -260,11 +270,16 @@ impl MeshChannel {
         // Transfer XLM from payer to contract using native XLM asset contract
         let xlm_client = token::StellarAssetClient::new(&env, &env.current_contract_address());
         // Use the native transfer: payer → contract
-        token::Client::new(&env, &xlm_client.address())
-            .transfer(&payer, &env.current_contract_address(), &amount);
+        token::Client::new(&env, &xlm_client.address()).transfer(
+            &payer,
+            &env.current_contract_address(),
+            &amount,
+        );
 
         channel.deposited_amount += amount;
-        env.storage().persistent().set(&DataKey::Channel(channel_id.clone()), &channel);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Channel(channel_id.clone()), &channel);
         env.storage().persistent().extend_ttl(
             &DataKey::Channel(channel_id.clone()),
             PERSISTENT_TTL_EXTEND,
@@ -318,7 +333,9 @@ impl MeshChannel {
         }
         if env.ledger().timestamp() >= channel.expires_at {
             channel.status = ChannelStatus::Expired;
-            env.storage().persistent().set(&DataKey::Channel(voucher.channel_id.clone()), &channel);
+            env.storage()
+                .persistent()
+                .set(&DataKey::Channel(voucher.channel_id.clone()), &channel);
             return Err(ChannelError::ChannelExpired);
         }
 
@@ -358,14 +375,20 @@ impl MeshChannel {
 
         // Mark nonce/voucher used
         env.storage().temporary().set(&nonce_key, &true);
-        env.storage().temporary().extend_ttl(&nonce_key, TEMP_TTL, TEMP_TTL);
+        env.storage()
+            .temporary()
+            .extend_ttl(&nonce_key, TEMP_TTL, TEMP_TTL);
         env.storage().temporary().set(&voucher_key, &true);
-        env.storage().temporary().extend_ttl(&voucher_key, TEMP_TTL, TEMP_TTL);
+        env.storage()
+            .temporary()
+            .extend_ttl(&voucher_key, TEMP_TTL, TEMP_TTL);
 
         // Update channel state
         channel.settled_amount += voucher.amount;
         channel.sequence_counter = channel.sequence_counter.max(voucher.sequence + 1);
-        env.storage().persistent().set(&DataKey::Channel(voucher.channel_id.clone()), &channel);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Channel(voucher.channel_id.clone()), &channel);
         env.storage().persistent().extend_ttl(
             &DataKey::Channel(voucher.channel_id.clone()),
             PERSISTENT_TTL_EXTEND,
@@ -424,7 +447,9 @@ impl MeshChannel {
         }
 
         channel.status = ChannelStatus::Cancelled;
-        env.storage().persistent().set(&DataKey::Channel(channel_id.clone()), &channel);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Channel(channel_id.clone()), &channel);
 
         // Refund remaining balance to payer
         let refund = channel.deposited_amount - channel.settled_amount;
@@ -467,7 +492,9 @@ impl MeshChannel {
 
         let refund = channel.deposited_amount - channel.settled_amount;
         channel.status = ChannelStatus::Closed;
-        env.storage().persistent().set(&DataKey::Channel(channel_id.clone()), &channel);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Channel(channel_id.clone()), &channel);
 
         if refund > 0 {
             Self::transfer_xlm_to(&env, &channel.payer, refund)?;
@@ -484,10 +511,7 @@ impl MeshChannel {
     // ----------------------------------------------------------
     // Getters
     // ----------------------------------------------------------
-    pub fn get_channel(
-        env: Env,
-        channel_id: BytesN<32>,
-    ) -> Result<Channel, ChannelError> {
+    pub fn get_channel(env: Env, channel_id: BytesN<32>) -> Result<Channel, ChannelError> {
         Self::require_initialized(&env)?;
         env.storage()
             .persistent()
@@ -495,10 +519,7 @@ impl MeshChannel {
             .ok_or(ChannelError::ChannelNotFound)
     }
 
-    pub fn get_channel_balance(
-        env: Env,
-        channel_id: BytesN<32>,
-    ) -> Result<i128, ChannelError> {
+    pub fn get_channel_balance(env: Env, channel_id: BytesN<32>) -> Result<i128, ChannelError> {
         let channel: Channel = env
             .storage()
             .persistent()
@@ -507,16 +528,17 @@ impl MeshChannel {
         Ok(channel.deposited_amount - channel.settled_amount)
     }
 
-    pub fn get_used_nonce(
-        env: Env,
-        channel_id: BytesN<32>,
-        sequence: u64,
-    ) -> bool {
-        env.storage().temporary().has(&DataKey::UsedNonce(channel_id, sequence))
+    pub fn get_used_nonce(env: Env, channel_id: BytesN<32>, sequence: u64) -> bool {
+        env.storage()
+            .temporary()
+            .has(&DataKey::UsedNonce(channel_id, sequence))
     }
 
     pub fn channel_count(env: Env) -> u32 {
-        env.storage().instance().get(&DataKey::ChannelCount).unwrap_or(0)
+        env.storage()
+            .instance()
+            .get(&DataKey::ChannelCount)
+            .unwrap_or(0)
     }
 
     pub fn get_registry(env: Env) -> Result<Address, ChannelError> {

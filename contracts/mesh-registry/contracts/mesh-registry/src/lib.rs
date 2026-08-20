@@ -1,9 +1,8 @@
 #![no_std]
 
 use soroban_sdk::{
-    contract, contractimpl, contracttype, contracterror,
-    Address, Env, String, Symbol, Vec, symbol_short,
-    log,
+    contract, contracterror, contractimpl, contracttype, log, symbol_short, Address, Env, String,
+    Symbol, Vec,
 };
 
 // ============================================================
@@ -45,7 +44,7 @@ pub enum RegistryError {
 pub struct ParticipantInfo {
     pub address: Address,
     pub label: String,
-    pub registered_at: u64,  // ledger timestamp
+    pub registered_at: u64, // ledger timestamp
     pub updated_at: u64,
     pub active: bool,
     pub channel_count: u32,
@@ -65,10 +64,10 @@ pub struct ChannelPolicy {
 }
 
 // Default policy values
-const DEFAULT_MIN_AMOUNT: i128 = 1_000_000;         // 0.1 XLM in stroops
-const DEFAULT_MAX_AMOUNT: i128 = 100_000_000_000;    // 10,000 XLM in stroops
-const DEFAULT_MAX_EXPIRY_SECS: u64 = 72 * 3600;     // 72 hours
-const DEFAULT_MIN_EXPIRY_SECS: u64 = 3600;           // 1 hour
+const DEFAULT_MIN_AMOUNT: i128 = 1_000_000; // 0.1 XLM in stroops
+const DEFAULT_MAX_AMOUNT: i128 = 100_000_000_000; // 10,000 XLM in stroops
+const DEFAULT_MAX_EXPIRY_SECS: u64 = 72 * 3600; // 72 hours
+const DEFAULT_MIN_EXPIRY_SECS: u64 = 3600; // 1 hour
 const DEFAULT_MAX_CHANNELS: u32 = 10;
 const PROTOCOL_VERSION: u32 = 1;
 
@@ -95,8 +94,12 @@ impl MeshRegistry {
 
         env.storage().instance().set(&DataKey::Admin, &admin);
         env.storage().instance().set(&DataKey::Initialized, &true);
-        env.storage().instance().set(&DataKey::ProtocolVersion, &PROTOCOL_VERSION);
-        env.storage().instance().set(&DataKey::ParticipantCount, &0u32);
+        env.storage()
+            .instance()
+            .set(&DataKey::ProtocolVersion, &PROTOCOL_VERSION);
+        env.storage()
+            .instance()
+            .set(&DataKey::ParticipantCount, &0u32);
 
         // Default channel policy
         let policy = ChannelPolicy {
@@ -108,14 +111,16 @@ impl MeshRegistry {
             max_channels_per_user: DEFAULT_MAX_CHANNELS,
             updated_at: env.ledger().timestamp(),
         };
-        env.storage().instance().set(&DataKey::ChannelPolicy, &policy);
-        env.storage().instance().extend_ttl(PERSISTENT_TTL_EXTEND, PERSISTENT_TTL_EXTEND);
+        env.storage()
+            .instance()
+            .set(&DataKey::ChannelPolicy, &policy);
+        env.storage()
+            .instance()
+            .extend_ttl(PERSISTENT_TTL_EXTEND, PERSISTENT_TTL_EXTEND);
 
         // Emit event
-        env.events().publish(
-            (symbol_short!("reg_init"), symbol_short!("admin")),
-            admin,
-        );
+        env.events()
+            .publish((symbol_short!("reg_init"), symbol_short!("admin")), admin);
 
         Ok(())
     }
@@ -152,11 +157,19 @@ impl MeshRegistry {
         };
 
         env.storage().persistent().set(&key, &info);
-        env.storage().persistent().extend_ttl(&key, PERSISTENT_TTL_EXTEND, PERSISTENT_TTL_EXTEND);
+        env.storage()
+            .persistent()
+            .extend_ttl(&key, PERSISTENT_TTL_EXTEND, PERSISTENT_TTL_EXTEND);
 
         // Update count
-        let count: u32 = env.storage().instance().get(&DataKey::ParticipantCount).unwrap_or(0);
-        env.storage().instance().set(&DataKey::ParticipantCount, &(count + 1));
+        let count: u32 = env
+            .storage()
+            .instance()
+            .get(&DataKey::ParticipantCount)
+            .unwrap_or(0);
+        env.storage()
+            .instance()
+            .set(&DataKey::ParticipantCount, &(count + 1));
 
         // Emit event
         env.events().publish(
@@ -191,7 +204,9 @@ impl MeshRegistry {
         info.updated_at = env.ledger().timestamp();
 
         env.storage().persistent().set(&key, &info);
-        env.storage().persistent().extend_ttl(&key, PERSISTENT_TTL_EXTEND, PERSISTENT_TTL_EXTEND);
+        env.storage()
+            .persistent()
+            .extend_ttl(&key, PERSISTENT_TTL_EXTEND, PERSISTENT_TTL_EXTEND);
 
         Ok(info)
     }
@@ -199,10 +214,7 @@ impl MeshRegistry {
     // ----------------------------------------------------------
     // Get Participant
     // ----------------------------------------------------------
-    pub fn get_participant(
-        env: Env,
-        address: Address,
-    ) -> Result<ParticipantInfo, RegistryError> {
+    pub fn get_participant(env: Env, address: Address) -> Result<ParticipantInfo, RegistryError> {
         Self::require_initialized(&env)?;
         env.storage()
             .persistent()
@@ -213,16 +225,17 @@ impl MeshRegistry {
     // ----------------------------------------------------------
     // Is Participant Active
     // ----------------------------------------------------------
-    pub fn is_participant_active(
-        env: Env,
-        address: Address,
-    ) -> bool {
+    pub fn is_participant_active(env: Env, address: Address) -> bool {
         if !env.storage().instance().has(&DataKey::Initialized) {
             return false;
         }
 
         // If registration is not required, all addresses are "active"
-        let policy: ChannelPolicy = env.storage().instance().get(&DataKey::ChannelPolicy).unwrap();
+        let policy: ChannelPolicy = env
+            .storage()
+            .instance()
+            .get(&DataKey::ChannelPolicy)
+            .unwrap();
         if !policy.require_registration {
             return true;
         }
@@ -246,11 +259,19 @@ impl MeshRegistry {
         caller.require_auth();
 
         let key = DataKey::Participant(address.clone());
-        if let Some(mut info) = env.storage().persistent().get::<DataKey, ParticipantInfo>(&key) {
+        if let Some(mut info) = env
+            .storage()
+            .persistent()
+            .get::<DataKey, ParticipantInfo>(&key)
+        {
             info.channel_count += 1;
             info.updated_at = env.ledger().timestamp();
             env.storage().persistent().set(&key, &info);
-            env.storage().persistent().extend_ttl(&key, PERSISTENT_TTL_EXTEND, PERSISTENT_TTL_EXTEND);
+            env.storage().persistent().extend_ttl(
+                &key,
+                PERSISTENT_TTL_EXTEND,
+                PERSISTENT_TTL_EXTEND,
+            );
         }
         // If participant not found, silently succeed (open registration mode)
         Ok(())
@@ -268,12 +289,12 @@ impl MeshRegistry {
         Self::require_admin(&env, &admin)?;
         admin.require_auth();
 
-        env.storage().instance().set(&DataKey::ChannelPolicy, &policy);
+        env.storage()
+            .instance()
+            .set(&DataKey::ChannelPolicy, &policy);
 
-        env.events().publish(
-            (symbol_short!("policy_up"), symbol_short!("admin")),
-            admin,
-        );
+        env.events()
+            .publish((symbol_short!("policy_up"), symbol_short!("admin")), admin);
 
         Ok(())
     }
@@ -283,14 +304,21 @@ impl MeshRegistry {
     // ----------------------------------------------------------
     pub fn get_channel_policy(env: Env) -> Result<ChannelPolicy, RegistryError> {
         Self::require_initialized(&env)?;
-        Ok(env.storage().instance().get(&DataKey::ChannelPolicy).unwrap())
+        Ok(env
+            .storage()
+            .instance()
+            .get(&DataKey::ChannelPolicy)
+            .unwrap())
     }
 
     // ----------------------------------------------------------
     // Get Protocol Version
     // ----------------------------------------------------------
     pub fn protocol_version(env: Env) -> u32 {
-        env.storage().instance().get(&DataKey::ProtocolVersion).unwrap_or(PROTOCOL_VERSION)
+        env.storage()
+            .instance()
+            .get(&DataKey::ProtocolVersion)
+            .unwrap_or(PROTOCOL_VERSION)
     }
 
     // ----------------------------------------------------------
@@ -305,7 +333,10 @@ impl MeshRegistry {
     // Get Participant Count
     // ----------------------------------------------------------
     pub fn participant_count(env: Env) -> u32 {
-        env.storage().instance().get(&DataKey::ParticipantCount).unwrap_or(0)
+        env.storage()
+            .instance()
+            .get(&DataKey::ParticipantCount)
+            .unwrap_or(0)
     }
 
     // ----------------------------------------------------------
