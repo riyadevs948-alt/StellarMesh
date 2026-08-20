@@ -50,7 +50,7 @@ export async function computeVoucherId(
   payload: CanonicalVoucherPayload
 ): Promise<string> {
   const bytes = canonicalBytes(payload);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', bytes);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', bytes.buffer as ArrayBuffer);
   const hashArray = new Uint8Array(hashBuffer);
   return Array.from(hashArray)
     .map((b) => b.toString(16).padStart(2, '0'))

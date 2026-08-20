@@ -12,9 +12,9 @@ import { useAppStore, useIsOffline, useWallet } from '../../store/app.store';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-  { to: '/channels', label: 'Channels', icon: Zap },
-  { to: '/pay', label: 'Payments', icon: CreditCard },
-  { to: '/activity', label: 'Activity', icon: Activity },
+  { to: '/channels', label: 'Channels', icon: Zap, exact: false },
+  { to: '/pay', label: 'Payments', icon: CreditCard, exact: false },
+  { to: '/activity', label: 'Activity', icon: Activity, exact: false },
 ] as const;
 
 const BOTTOM_ITEMS = [

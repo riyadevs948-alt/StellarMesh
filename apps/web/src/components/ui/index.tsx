@@ -208,9 +208,9 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
 
 // ─── Error Banner ─────────────────────────────────────────────
 
-export function ErrorBanner({ message, onRetry }: { message: string; onRetry?: () => void }) {
+export function ErrorBanner({ message, className, onRetry }: { message: string; className?: string; onRetry?: () => void }) {
   return (
-    <div className="flex items-start gap-3 p-4 bg-accent-red/10 border border-accent-red/20 rounded-xl">
+    <div className={`p-4 rounded-xl border border-accent-red/20 bg-accent-red/5 flex items-start gap-3 text-sm ${className || ''}`}>
       <div className="w-5 h-5 rounded-full bg-accent-red/20 flex items-center justify-center shrink-0 mt-0.5">
         <span className="text-accent-red text-xs font-bold">!</span>
       </div>
