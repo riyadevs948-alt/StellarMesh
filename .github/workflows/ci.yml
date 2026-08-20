@@ -64,6 +64,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
+            ~/.cargo/bin
             contracts/mesh-registry/target
             contracts/mesh-channel/target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}

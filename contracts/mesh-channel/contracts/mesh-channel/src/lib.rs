@@ -396,11 +396,6 @@ impl MeshChannel {
         );
 
         // Transfer XLM to payee
-        let xlm_client = token::Client::new(&env, &env.current_contract_address());
-        // In Soroban, to transfer native XLM from the contract's balance,
-        // we use the stellar asset contract for XLM.
-        // The contract holds XLM in its own account; use token interface to transfer.
-        // Note: this requires the contract to have an XLM balance.
         // We use the native Stellar asset contract at the known address.
         Self::transfer_xlm_to(&env, &channel.payee, voucher.amount)?;
 
@@ -568,8 +563,8 @@ impl MeshChannel {
         let exp_bytes = expires_at.to_be_bytes();
         data.extend_from_slice(&ts_bytes);
         data.extend_from_slice(&exp_bytes);
-        // SHA-256 produces BytesN<32>
-        env.crypto().sha256(&data)
+        // SHA-256 produces Hash<32>, which converts to BytesN<32>
+        env.crypto().sha256(&data).into()
     }
 
     fn transfer_xlm_to(env: &Env, to: &Address, amount: i128) -> Result<(), ChannelError> {
