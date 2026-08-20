@@ -1,8 +1,8 @@
 #![no_std]
 
 use soroban_sdk::{
-    contract, contracterror, contractimpl, contracttype, crypto::Hash, symbol_short, token,
-    Address, Bytes, BytesN, Env, String, Symbol, Vec,
+    contract, contracterror, contractimpl, contracttype, symbol_short, token,
+    Address, Bytes, BytesN, Env,
 };
 
 // ============================================================
@@ -267,14 +267,8 @@ impl MeshChannel {
             return Err(ChannelError::AmountExceedsLimit);
         }
 
-        // Transfer XLM from payer to contract using native XLM asset contract
-        let xlm_client = token::StellarAssetClient::new(&env, &env.current_contract_address());
-        // Use the native transfer: payer → contract
-        token::Client::new(&env, &xlm_client.address()).transfer(
-            &payer,
-            &env.current_contract_address(),
-            &amount,
-        );
+        let xlm = token::Client::new(&env, &env.current_contract_address());
+        xlm.transfer(&payer, &env.current_contract_address(), &amount);
 
         channel.deposited_amount += amount;
         env.storage()
@@ -553,8 +547,8 @@ impl MeshChannel {
 
     fn generate_channel_id(
         env: &Env,
-        payer: &Address,
-        payee: &Address,
+        _payer: &Address,
+        _payee: &Address,
         expires_at: u64,
     ) -> BytesN<32> {
         let mut data = Bytes::new(env);
