@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Wallet, CheckCircle2, AlertCircle, ExternalLink, Copy, Trash2, RefreshCw } from 'lucide-react';
 import {
   connectFreighter, getConnectedAddress, buildWalletSession,
-} from '../../../packages/stellar-client/src/freighter';
+} from '@stellar-mesh/stellar-client';
 import { getAccountBalance, explorerAccountUrl, fundWithFriendbot } from '../lib/stellar';
 import { useAppStore, useWallet } from '../store/app.store';
 import { WalletSessionRepo } from '../lib/db';

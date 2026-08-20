@@ -2,7 +2,7 @@
 // StellarMesh — Top Bar (header) with offline banner
 // ============================================================
 import { Wallet, RefreshCw } from 'lucide-react';
-import { useAppStore, useIsOffline } from '../store/app.store';
+import { useAppStore, useWallet, useIsOffline } from '../../store/app.store';
 
 interface TopBarProps {
   title?: string;

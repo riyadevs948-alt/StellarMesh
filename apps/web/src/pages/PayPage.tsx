@@ -17,7 +17,7 @@ import {
   PROTOCOL_VERSION, VOUCHER_ASSET_XLM,
   type Voucher, type VoucherAuthorization,
 } from '@stellar-mesh/shared';
-import { signTransactionWithFreighter } from '../../../packages/stellar-client/src/freighter';
+import { signTransactionWithFreighter } from '@stellar-mesh/stellar-client';
 import toast from 'react-hot-toast';
 
 export function PayPage() {

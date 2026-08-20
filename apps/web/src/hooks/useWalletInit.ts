@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { useAppStore } from '../store/app.store';
 import { WalletSessionRepo, ChannelRepo, VoucherRepo } from '../lib/db';
 import { getAccountBalance } from '../lib/stellar';
-import { getConnectedAddress } from '../../../packages/stellar-client/src/freighter';
+import { getConnectedAddress } from '@stellar-mesh/stellar-client';
 import { startSettlementEngine } from '../lib/settlement.engine';
 
 export function useWalletInit() {
