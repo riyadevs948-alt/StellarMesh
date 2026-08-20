@@ -73,8 +73,12 @@ async function settleVoucher(
   const attempt: SettlementAttempt = {
     id: attemptId,
     voucherId: voucher.voucherId,
+    channelId: voucher.channelId,
     status: 'VALIDATING',
     startedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    retryCount: 0,
+    maxRetries: 3,
   };
 
   await SettlementAttemptRepo.save(attempt);

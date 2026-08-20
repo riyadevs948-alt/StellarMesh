@@ -1,7 +1,7 @@
 // ============================================================
 // StellarMesh — Stellar RPC Client
 // ============================================================
-import { SorobanRpc, TransactionBuilder, Networks, Account, Operation, Asset, Memo } from '@stellar/stellar-sdk';
+import { rpc as SorobanRpc, TransactionBuilder, Networks, Account, Operation, Asset, Memo } from '@stellar/stellar-sdk';
 import type { NetworkError } from '@stellar-mesh/shared';
 import { NetworkError as NetErr, STELLAR_TESTNET_RPC, STELLAR_TESTNET_PASSPHRASE } from '@stellar-mesh/shared';
 
@@ -33,7 +33,7 @@ export async function checkRpcHealth(): Promise<{
     return {
       healthy: true,
       latestLedger: info.sequence,
-      latestLedgerTimestamp: new Date((info.closeTime ?? 0) * 1000).toISOString(),
+      latestLedgerTimestamp: new Date(( (info as any).closeTime ?? 0) * 1000).toISOString(),
       latencyMs,
     };
   } catch {
@@ -46,12 +46,15 @@ export async function checkRpcHealth(): Promise<{
   }
 }
 
+import { Horizon } from '@stellar/stellar-sdk';
+const horizon = new Horizon.Server(HORIZON_URL);
+
 // ─── Account / Balance ─────────────────────────────────────────
 export async function getAccountBalance(address: string): Promise<string> {
   try {
-    const account = await rpc.getAccount(address);
+    const account = await horizon.loadAccount(address);
     const xlmBalance = account.balances.find(
-      (b) => b.asset_type === 'native'
+      (b: any) => b.asset_type === 'native'
     );
     return xlmBalance?.balance ?? '0';
   } catch (e: unknown) {
@@ -69,7 +72,7 @@ export async function buildPaymentTransaction(
   amountXlm: string,
   memo?: string
 ): Promise<string> {
-  const account = await rpc.getAccount(sourceAddress);
+  const account = await horizon.loadAccount(sourceAddress);
   const sourceAccount = new Account(account.accountId(), account.sequenceNumber());
 
   const builder = new TransactionBuilder(sourceAccount, {
@@ -149,7 +152,7 @@ export async function getContractEvents(
   contractId: string,
   startLedger: number,
   limit = 50
-): Promise<SorobanRpc.Api.EventRecord[]> {
+): Promise<any[]> {
   try {
     const result = await rpc.getEvents({
       startLedger,
