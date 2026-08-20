@@ -67,7 +67,9 @@ jobs:
             ~/.cargo/bin
             contracts/mesh-registry/target
             contracts/mesh-channel/target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-v2-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-v2-
 
       - name: Install dependencies for Stellar CLI
         run: sudo apt-get update && sudo apt-get install -y libdbus-1-dev libudev-dev pkg-config
