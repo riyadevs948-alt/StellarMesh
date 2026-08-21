@@ -267,14 +267,13 @@ export function DashboardPage() {
   const navigate = useNavigate();
   const wallet = useWallet();
   const isOffline = useIsOffline();
-  const setVouchers = useAppStore((s) => s.setVouchers);
-  const setChannels = useAppStore((s) => s.setChannels);
-  const setBalance = useAppStore((s) => s.setBalance);
-  const setBalanceLoading = useAppStore((s) => s.setBalanceLoading);
+  // Read wallet address and offline status as primitives to avoid stale closure loops
+  const walletAddress = wallet?.address ?? null;
 
   // Load persisted data on mount
   useEffect(() => {
     void (async () => {
+      const { setVouchers, setChannels } = useAppStore.getState();
       const [vouchers, channels] = await Promise.all([
         VoucherRepo.getAll(),
         ChannelRepo.getAll(),
@@ -286,13 +285,14 @@ export function DashboardPage() {
 
   // Load balance when wallet connects
   useEffect(() => {
-    if (!wallet || isOffline) return;
+    if (!walletAddress || isOffline) return;
+    const { setBalance, setBalanceLoading } = useAppStore.getState();
     setBalanceLoading(true);
-    getAccountBalance(wallet.address)
+    getAccountBalance(walletAddress)
       .then(setBalance)
       .catch(() => {})
       .finally(() => setBalanceLoading(false));
-  }, [wallet?.address, isOffline]);
+  }, [walletAddress, isOffline]);
 
   if (!wallet) {
     return (
