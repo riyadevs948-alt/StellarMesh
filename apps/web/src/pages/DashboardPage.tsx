@@ -206,9 +206,12 @@ function ChannelOverviewCard() {
 }
 
 function RecentActivity() {
-  const vouchers = useAppStore((s) => s.vouchers.slice().sort(
-    (a, b) => new Date(b.issuedAt).getTime() - new Date(a.issuedAt).getTime()
-  ).slice(0, 5));
+  const allVouchers = useAppStore((s) => s.vouchers);
+  // Sort and slice outside the selector to keep selector reference stable
+  const vouchers = allVouchers
+    .slice()
+    .sort((a, b) => new Date(b.issuedAt).getTime() - new Date(a.issuedAt).getTime())
+    .slice(0, 5);
   const navigate = useNavigate();
 
   const getIcon = (v: Voucher) => {
