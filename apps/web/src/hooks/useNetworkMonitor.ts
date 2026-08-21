@@ -33,14 +33,8 @@ function computeNetworkState(params: {
 }
 
 export function useNetworkMonitor() {
-  const {
-    setState,
-    setRpcHealthy,
-    setLatestLedger,
-    setLatencyMs,
-    isSimulatingOffline,
-    latestLedgerTimestamp,
-  } = useAppStore();
+  // Use a ref to the store so we never capture stale closures
+  const isSimulatingOffline = useAppStore((s) => s.isSimulatingOffline);
 
   const intervalRef = useRef<number | null>(null);
   const isCheckingRef = useRef(false);
@@ -49,16 +43,20 @@ export function useNetworkMonitor() {
     if (isCheckingRef.current) return;
     isCheckingRef.current = true;
 
+    // Read actions directly from store to avoid stale closure issues
+    const { setState, setRpcHealthy, setLatestLedger, setLatencyMs, isSimulatingOffline: simOffline } =
+      useAppStore.getState();
+
     const browserOnline = navigator.onLine;
 
     if (!browserOnline) {
       setRpcHealthy(false);
-      setState(isSimulatingOffline ? 'OFFLINE' : 'OFFLINE');
+      setState('OFFLINE');
       isCheckingRef.current = false;
       return;
     }
 
-    if (isSimulatingOffline) {
+    if (simOffline) {
       setState('OFFLINE');
       isCheckingRef.current = false;
       return;
@@ -78,7 +76,7 @@ export function useNetworkMonitor() {
       browserOnline,
       rpcHealthy: result.healthy,
       latestLedgerTimestamp: result.latestLedgerTimestamp,
-      isSimulatingOffline,
+      isSimulatingOffline: simOffline,
     });
 
     setState(newState);
@@ -100,7 +98,7 @@ export function useNetworkMonitor() {
     }
 
     isCheckingRef.current = false;
-  }, [isSimulatingOffline, setRpcHealthy, setState, setLatestLedger, setLatencyMs]);
+  }, []);
 
   useEffect(() => {
     // Initial check
@@ -114,6 +112,7 @@ export function useNetworkMonitor() {
     // Browser online/offline events
     const handleOnline = () => void doHealthCheck();
     const handleOffline = () => {
+      const { setRpcHealthy, setState } = useAppStore.getState();
       setRpcHealthy(false);
       setState('OFFLINE');
     };
@@ -126,5 +125,5 @@ export function useNetworkMonitor() {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [doHealthCheck, setRpcHealthy, setState]);
+  }, [doHealthCheck]);
 }
