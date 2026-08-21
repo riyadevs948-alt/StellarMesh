@@ -19,10 +19,11 @@ const LIFECYCLE_TO_DISPLAY: Record<VoucherLifecycleStatus, string> = {
 };
 
 export function ActivityPage() {
-  const vouchers = useAppStore((s) =>
-    [...s.vouchers].sort(
-      (a, b) => new Date(b.issuedAt).getTime() - new Date(a.issuedAt).getTime()
-    )
+  const vouchers = useAppStore((s) => s.vouchers);
+
+  // Sort outside the selector so the selector returns a stable reference
+  const sortedVouchers = [...vouchers].sort(
+    (a, b) => new Date(b.issuedAt).getTime() - new Date(a.issuedAt).getTime()
   );
 
   return (
@@ -32,7 +33,7 @@ export function ActivityPage() {
         <p className="text-text-muted text-sm">All payment events from your channels.</p>
       </div>
 
-      {vouchers.length === 0 ? (
+      {sortedVouchers.length === 0 ? (
         <EmptyState
           icon={<Activity className="w-6 h-6" />}
           title="No activity yet"
@@ -40,7 +41,7 @@ export function ActivityPage() {
         />
       ) : (
         <div className="space-y-2">
-          {vouchers.map((v) => {
+          {sortedVouchers.map((v) => {
             const displayStatus = (v.localStatus
               ? LIFECYCLE_TO_DISPLAY[v.localStatus]
               : 'PENDING_SETTLEMENT') as any;
