@@ -1,4 +1,4 @@
-name: StellarMesh CI
+name: CI/CD — StellarMesh Full Pipeline
 
 on:
   push:
@@ -17,9 +17,9 @@ env:
   VITE_API_BASE_URL: http://localhost:3001
 
 jobs:
-  # ─── JavaScript / TypeScript ───────────────────────────────────
+  # ─── ⚡ Frontend CI ─────────────────────────────────────────────
   frontend:
-    name: Frontend (Lint · Typecheck · Test · Build)
+    name: "⚡ Frontend CI — npm install & build"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,9 +45,9 @@ jobs:
       - name: Build frontend
         run: npm run build --workspace=apps/web
 
-  # ─── Rust / Soroban Contracts ──────────────────────────────────
+  # ─── 🦀 Smart Contract CI ───────────────────────────────────────
   contracts:
-    name: Contracts (Format · Test · Build)
+    name: "🦀 Smart Contract CI — cargo test"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -100,3 +100,65 @@ jobs:
       - name: Build MeshChannel WASM
         run: stellar contract build
         working-directory: contracts/mesh-channel
+
+  # ─── 🚀 CD — Verify Vercel Production Deployment ───────────────
+  deploy:
+    name: "🚀 CD — Verify Vercel Production Deployment"
+    runs-on: ubuntu-latest
+    needs: [frontend, contracts]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32v1-none
+          components: rustfmt, clippy
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cargo/bin
+            contracts/mesh-registry/target
+            contracts/mesh-channel/target
+          key: ${{ runner.os }}-cargo-v2-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-v2-
+
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@main
+
+      - name: Install Stellar CLI
+        run: cargo binstall -y stellar-cli
+
+      - name: Deploy Stellar Contracts to Testnet
+        run: |
+          chmod +x scripts/deploy.sh
+          ./scripts/deploy.sh
+        env:
+          STELLAR_DEPLOYER_SECRET: ${{ secrets.STELLAR_DEPLOYER_SECRET }}
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
