@@ -11,14 +11,16 @@ import { getConnectedAddress } from '@stellar-mesh/stellar-client';
 import { startSettlementEngine } from '../lib/settlement.engine';
 
 export function useWalletInit() {
-  const setSession = useAppStore((s) => s.setSession);
-  const setBalance = useAppStore((s) => s.setBalance);
-  const setBalanceLoading = useAppStore((s) => s.setBalanceLoading);
-  const setChannels = useAppStore((s) => s.setChannels);
-  const setVouchers = useAppStore((s) => s.setVouchers);
-
   useEffect(() => {
     void (async () => {
+      const {
+        setSession,
+        setBalance,
+        setBalanceLoading,
+        setChannels,
+        setVouchers,
+      } = useAppStore.getState();
+
       // 1. Restore session from IndexedDB
       const sessions = await WalletSessionRepo.getAll();
       if (sessions.length === 0) return;
@@ -64,3 +66,4 @@ export function useWalletInit() {
     };
   }, []);
 }
+
