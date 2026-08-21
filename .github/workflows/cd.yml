@@ -46,11 +46,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-v2-
 
-      - name: Install dependencies for Stellar CLI
-        run: sudo apt-get update && sudo apt-get install -y libdbus-1-dev libudev-dev pkg-config
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@main
 
       - name: Install Stellar CLI
-        run: cargo install --locked stellar-cli
+        run: cargo binstall -y stellar-cli
 
       - name: Deploy Stellar Contracts
         run: |
