@@ -4,7 +4,7 @@ set -e
 # Setup identity if secret is provided
 if [ -n "$STELLAR_DEPLOYER_SECRET" ]; then
     echo "Setting up Stellar CLI identity..."
-    stellar keys add deployer --secret-key "$STELLAR_DEPLOYER_SECRET"
+    echo "$STELLAR_DEPLOYER_SECRET" | stellar keys add deployer --secret-key
     export STELLAR_ACCOUNT=deployer
 else
     echo "No STELLAR_DEPLOYER_SECRET found. Please provide one."
