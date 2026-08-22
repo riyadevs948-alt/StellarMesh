@@ -18,7 +18,7 @@ export function LandingPage() {
            </div>
            <span className="text-xl font-black text-[#1a1a2e] tracking-tight">StellarMesh</span>
         </div>
-        <button onClick={() => navigate('/')} className="btn-clay-white !px-6 !py-2.5">
+        <button onClick={() => navigate('/dashboard')} className="btn-clay-white !px-6 !py-2.5">
           Launch App <ArrowRight className="w-4 h-4" />
         </button>
       </nav>
@@ -41,7 +41,7 @@ export function LandingPage() {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4">
-          <button onClick={() => navigate('/')} className="btn-clay-red px-10 py-4 text-lg">
+          <button onClick={() => navigate('/dashboard')} className="btn-clay-red px-10 py-4 text-lg">
             Launch App <ArrowRight className="w-5 h-5 ml-2" />
           </button>
           <button onClick={() => navigate('/docs')} className="btn-clay-white px-10 py-4 text-lg">

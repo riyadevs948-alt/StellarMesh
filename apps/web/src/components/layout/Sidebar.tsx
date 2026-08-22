@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 const nav = [
-  { to: '/',            label: 'Dashboard',  icon: LayoutDashboard },
+  { to: '/dashboard',            label: 'Dashboard',  icon: LayoutDashboard },
   { to: '/wallet',      label: 'Wallet',     icon: Wallet },
   { to: '/channels',    label: 'Channels',   icon: ArrowLeftRight },
   { to: '/pay',         label: 'Payments',   icon: Zap },
@@ -60,7 +60,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           <NavLink
             key={to}
             to={to}
-            end={to === '/'}
+            end={to === '/dashboard'}
             onClick={onClose}
             className={({ isActive }) =>
               `sidebar-link ${isActive ? 'active' : ''}`
