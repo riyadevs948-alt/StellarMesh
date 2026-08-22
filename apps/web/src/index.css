@@ -430,6 +430,9 @@
     color: #e63946;
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    line-height: 1.5;
+    display: block;
+    padding-bottom: 4px;
   }
   .swiss-grid-line {
     border-top: 2px solid #e63946;

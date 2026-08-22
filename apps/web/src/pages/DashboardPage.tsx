@@ -50,23 +50,23 @@ function WalletCard() {
           ) : balance !== null ? (
             <div className="flex items-baseline gap-2">
               <span className="text-4xl font-black tracking-tight">
-                ${(parseFloat(balance) * 0.12).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {parseFloat(balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
-              <span className="text-xl font-bold text-white/80">USD</span>
+              <span className="text-xl font-bold text-white/80">XLM</span>
             </div>
           ) : (
             <p className="text-3xl font-black opacity-50">—</p>
           )}
         </div>
         <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-inner-clay">
-          <span className="font-bold text-lg">$</span>
+          <span className="font-bold text-lg">xlm</span>
         </div>
       </div>
 
       <div className="flex gap-8 mt-8 relative z-10">
         <div>
           <p className="text-white/80 text-[11px] font-bold uppercase tracking-wider mb-1">Available</p>
-          <p className="font-bold">{balance ? (parseFloat(balance) * 0.12).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}</p>
+          <p className="font-bold">{balance ? parseFloat(balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}</p>
         </div>
         <div>
           <p className="text-white/80 text-[11px] font-bold uppercase tracking-wider mb-1">Locked</p>
