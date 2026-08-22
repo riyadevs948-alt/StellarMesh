@@ -255,42 +255,34 @@ export function DashboardPage() {
         
         {/* Top left: Wallet */}
         <div className="md:col-span-8">
-          <div className="mb-3">
-             <span className="swiss-section-title">Wallet Balance</span>
-          </div>
+          <h2 className="swiss-section-title block mb-4">Wallet Balance</h2>
           <WalletCard />
         </div>
 
         {/* Top right: Network */}
         <div className="md:col-span-4">
-          <div className="mb-3">
-             <span className="swiss-section-title">Network Status</span>
-          </div>
+          <h2 className="swiss-section-title block mb-4">Network Status</h2>
           <NetworkStatusCard />
         </div>
       </div>
 
       <div>
-        <div className="mb-3">
-             <span className="swiss-section-title">Quick Actions</span>
-        </div>
+        <h2 className="swiss-section-title block mb-4">Quick Actions</h2>
         <QuickActions />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-         <div className="md:col-span-8">
-            <div className="mb-3">
-               <span className="swiss-section-title">Portfolio Overview</span>
-            </div>
-            <div className="clay-card p-6 h-[250px] flex flex-col items-center justify-center">
+         <div className="md:col-span-8 flex flex-col">
+            <h2 className="swiss-section-title block mb-4">Portfolio Overview</h2>
+            <div className="clay-card p-6 flex-1 min-h-[250px] flex flex-col items-center justify-center">
                <p className="font-bold text-[#8888a8]">Chart placeholder</p>
             </div>
          </div>
-         <div className="md:col-span-4">
-            <div className="mb-3 text-right">
-               <span className="swiss-section-title text-right w-full block">Recent Activity</span>
+         <div className="md:col-span-4 flex flex-col">
+            {/* Title inside the card is enough for Recent Activity */}
+            <div className="flex-1">
+              <RecentActivity />
             </div>
-            <RecentActivity />
          </div>
       </div>
     </div>
