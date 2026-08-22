@@ -136,13 +136,40 @@ export function CreateChannelPage() {
       if (sendResult.status === 'ERROR') {
         let errMsg = 'Contract invocation failed — check your balance and channel limit';
         try {
-          const xdrError = sendResult.errorResult;
+          const xdrError = sendResult.errorResult as any;
           if (xdrError) {
-            // toXDR() gives base64, which is inspectable
-            errMsg = (xdrError as any).toXDR?.('base64') ?? JSON.stringify(xdrError);
+            // xdrError is xdr.TransactionResult — walk the XDR tree for the real code
+            const txCode = xdrError.result?.()?.switch?.()?.name ?? '';       // e.g. "txFailed"
+            const opResults: any[] = xdrError.result?.()?.results?.() ?? [];
+            if (opResults.length > 0) {
+              const tr = opResults[0].tr?.();
+              const trName = tr?.switch?.()?.name ?? '';                       // e.g. "invokeHostFunction"
+              if (trName === 'invokeHostFunction') {
+                const ihf = tr.invokeHostFunctionResult?.();
+                const ihfCode = ihf?.switch?.()?.name ?? 'unknown';           // e.g. "invokeHostFunctionTrapped"
+                // Map raw XDR codes to human-readable messages
+                const codeMap: Record<string, string> = {
+                  invokeHostFunctionTrapped: 'Contract execution trapped — the contract rejected this call. Check that the channel does not already exist and your limit is valid.',
+                  invokeHostFunctionMalformed: 'Malformed contract call — the parameters sent to the contract were invalid.',
+                  invokeHostFunctionSuccess: 'Success',
+                };
+                errMsg = codeMap[ihfCode] ?? ihfCode;
+              } else {
+                errMsg = trName || txCode || errMsg;
+              }
+            } else {
+              // Top-level tx error codes
+              const txCodeMap: Record<string, string> = {
+                txInsufficientBalance: 'Insufficient XLM balance — fund your account via Friendbot.',
+                txBadSeq: 'Bad sequence number — please refresh and try again.',
+                txInsufficientFee: 'Insufficient fee — try again.',
+                txFailed: 'Transaction failed — see contract error above.',
+              };
+              errMsg = txCodeMap[txCode] ?? txCode ?? errMsg;
+            }
           }
         } catch { /* keep default message */ }
-        throw new Error(`Transaction failed: ${errMsg}`);
+        throw new Error(errMsg);
       }
       
       const contractChannelId = sendResult.hash;
