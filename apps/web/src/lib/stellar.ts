@@ -172,10 +172,22 @@ export async function getContractEvents(
 
 // ─── Friendbot ─────────────────────────────────────────────────
 export async function fundWithFriendbot(address: string): Promise<void> {
-  const resp = await fetch(
-    `https://friendbot.stellar.org?addr=${encodeURIComponent(address)}`
-  );
-  if (!resp.ok) {
-    throw new NetErr('REQUEST_FAILED', 'Friendbot funding failed');
+  try {
+    const resp = await fetch(
+      `https://friendbot.stellar.org?addr=${encodeURIComponent(address)}`
+    );
+    if (!resp.ok) {
+      const text = await resp.text();
+      if (text.includes('op_already_exists')) {
+        return; // Account is already funded
+      }
+      throw new Error('Friendbot funding failed');
+    }
+  } catch (err) {
+    // Catch CORS or network errors
+    if (err instanceof Error && err.message.includes('Friendbot')) {
+      throw err;
+    }
+    throw new Error('Friendbot funding failed (Network issue)');
   }
 }
