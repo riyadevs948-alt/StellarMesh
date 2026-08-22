@@ -33,11 +33,11 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             {/* Landing page (no sidebar) */}
-            <Route path="/landing" element={<LandingPage />} />
+            <Route path="/" element={<LandingPage />} />
 
             {/* App shell */}
             <Route element={<AppLayout />}>
-              <Route path="/" element={<DashboardPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/wallet" element={<WalletPage />} />
               <Route path="/channels" element={<ChannelsPage />} />
               <Route path="/channels/create" element={<CreateChannelPage />} />

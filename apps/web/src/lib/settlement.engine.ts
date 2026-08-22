@@ -123,12 +123,34 @@ async function settleVoucher(
     store.upsertVoucher({ ...voucher, localStatus: 'SUBMISSION_PENDING' });
 
     const xlmAmount = stroopsToXlm(voucher.amount);
-    const unsignedXdr = await buildPaymentTransaction(
-      signerAddress,
-      voucher.payee,
-      xlmAmount,
-      voucher.reference
-    );
+    
+    // Instantiate the Soroban contract client
+    const { Client: MeshChannelClient } = await import('mesh_channel');
+    const client = new MeshChannelClient({
+      networkPassphrase,
+      contractId: 'CAJDG4UWXFBW6TT2O5LOQZ7KUOMEBESAESXAQWDFDCMISMVHATXTFNDA',
+      rpcUrl: 'https://soroban-testnet.stellar.org',
+    });
+
+    const signatureBuffer = Buffer.from(voucher.authorization!.signature, 'hex');
+
+    // Build the Soroban transaction
+    const tx = await client.settle_voucher({
+      settler: signerAddress,
+      voucher: {
+        channel_id: Buffer.from(voucher.channelId, 'hex'),
+        payer: voucher.payer,
+        payee: voucher.payee,
+        amount: BigInt(voucher.amount),
+        sequence: BigInt(voucher.sequence),
+        expires_at: BigInt(Math.floor(new Date(voucher.expiresAt).getTime() / 1000)),
+        voucher_id: Buffer.from(voucher.voucherId, 'hex'),
+        signed_payload: Buffer.from(voucher.authorization!.signedPayloadHex, 'hex'),
+        signature: signatureBuffer,
+      }
+    });
+
+    const unsignedXdr = tx.built!.toXDR();
 
     // Step 3: Sign
     await updateAttempt('AWAITING_SIGNATURE');

@@ -25,3 +25,6 @@ prisma/dev.db-journal
 *.sqlite-journal
 contract-ids.json
 deployed-contracts.json
+
+.vercel
+.env*

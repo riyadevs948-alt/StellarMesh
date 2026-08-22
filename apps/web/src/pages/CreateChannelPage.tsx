@@ -12,6 +12,11 @@ import { StepIndicator, Spinner, ErrorBanner, TxHashDisplay } from '../component
 import { xlmToStroops, stroopsToXlm } from '@stellar-mesh/voucher-protocol';
 import type { Channel } from '@stellar-mesh/shared';
 import { generateId, formatDate } from '../lib/utils';
+import { rpc, NETWORK_PASSPHRASE } from '../lib/stellar';
+import { StrKey, Address, nativeToScVal, xdr, TransactionBuilder, Account, Keypair } from '@stellar/stellar-sdk';
+import { signTransactionWithFreighter } from '@stellar-mesh/stellar-client';
+import { Client as MeshChannelClient } from 'mesh_channel';
+import { Client as MeshRegistryClient } from 'mesh_registry';
 import toast from 'react-hot-toast';
 
 const STEPS = ['Recipient', 'Limit', 'Expiry', 'Review', 'Confirm'];
@@ -82,38 +87,66 @@ export function CreateChannelPage() {
     setError(null);
 
     try {
-      // Build channel record (in a full implementation this would call the Soroban contract)
-      // For now we persist locally and simulate the on-chain tx
-      const expiresAt = new Date(
-        Date.now() + parseInt(form.expiryDays) * 86_400_000
-      ).toISOString();
+      const expiresAtUnix = Math.floor(Date.now() / 1000) + parseInt(form.expiryDays) * 86400;
+      const limitStroops = BigInt(xlmToStroops(form.limitXlm).toString());
+      
+      const client = new MeshChannelClient({
+        networkPassphrase: NETWORK_PASSPHRASE,
+        contractId: 'CAJDG4UWXFBW6TT2O5LOQZ7KUOMEBESAESXAQWDFDCMISMVHATXTFNDA',
+        rpcUrl: 'https://soroban-testnet.stellar.org',
+      });
 
-      const limitStroops = xlmToStroops(form.limitXlm).toString();
-      const contractChannelId = `channel-${Date.now().toString(16)}`;
+      // Generate a session key for offline signing and store it
+      const sessionKey = Keypair.random();
+      localStorage.setItem(`session_key_${wallet.address}`, sessionKey.secret());
+      const payerPubkey = sessionKey.rawPublicKey();
+
+      toast.loading('Simulating channel creation...', { id: 'channel-create' });
+      
+      const tx = await client.create_channel({
+        payer: wallet.address,
+        payer_pubkey: Buffer.from(payerPubkey),
+        payee: form.recipient,
+        limit_amount: limitStroops,
+        expires_at: BigInt(expiresAtUnix),
+      });
+
+      toast.loading('Please sign in Freighter to create channel...', { id: 'channel-create' });
+      const signedXdr = await signTransactionWithFreighter(tx.built!.toXDR(), wallet.address, NETWORK_PASSPHRASE);
+      
+      toast.loading('Submitting to Stellar Testnet...', { id: 'channel-create' });
+      const txBuilder = TransactionBuilder.fromXDR(signedXdr, NETWORK_PASSPHRASE);
+      const sendResult = await rpc.sendTransaction(txBuilder as any);
+      
+      if (sendResult.status === 'ERROR') {
+         throw new Error(`Transaction failed: ${sendResult.errorResult?.toString() ?? 'unknown'}`);
+      }
+      
+      const contractChannelId = sendResult.hash;
 
       const channel: Channel = {
         id: generateId(),
         payer: wallet.address,
         payee: form.recipient,
-        limitAmount: limitStroops,
+        limitAmount: limitStroops.toString(),
         availableBalance: '0',
         totalDeposited: '0',
         settledAmount: '0',
-        expiresAt,
+        expiresAt: new Date(expiresAtUnix * 1000).toISOString(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         status: 'ACTIVE',
         contractChannelId,
       };
 
-      // Persist locally
       await ChannelRepo.save(channel);
       upsertChannel(channel);
 
-      setTxHash(`testnet-demo-${contractChannelId}`);
-      setStep(4); // Move to confirm step
-      toast.success('Payment channel created!');
+      setTxHash(contractChannelId);
+      setStep(4);
+      toast.success('Payment channel created on Soroban!', { id: 'channel-create' });
     } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to create channel', { id: 'channel-create' });
       setError(e instanceof Error ? e.message : 'Failed to create channel');
     } finally {
       setSubmitting(false);

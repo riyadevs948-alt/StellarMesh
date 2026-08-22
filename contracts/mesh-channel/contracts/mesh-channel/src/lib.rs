@@ -83,6 +83,7 @@ pub enum ChannelStatus {
 pub struct Channel {
     pub channel_id: BytesN<32>,
     pub payer: Address,
+    pub payer_pubkey: BytesN<32>,
     pub payee: Address,
     pub limit_amount: i128,
     pub deposited_amount: i128,
@@ -104,6 +105,7 @@ pub struct VoucherPayload {
     pub expires_at: u64,
     pub voucher_id: Bytes,     // canonical hash hex as bytes
     pub signed_payload: Bytes, // the canonical bytes that were signed
+    pub signature: BytesN<64>, // ed25519 signature
 }
 
 // TTL constants
@@ -150,6 +152,7 @@ impl MeshChannel {
     pub fn create_channel(
         env: Env,
         payer: Address,
+        payer_pubkey: BytesN<32>,
         payee: Address,
         limit_amount: i128,
         expires_at: u64,
@@ -191,6 +194,7 @@ impl MeshChannel {
         let channel = Channel {
             channel_id: channel_id.clone(),
             payer: payer.clone(),
+            payer_pubkey,
             payee: payee.clone(),
             limit_amount,
             deposited_amount: 0,
@@ -320,6 +324,13 @@ impl MeshChannel {
         if channel.status != ChannelStatus::Active {
             return Err(ChannelError::ChannelNotActive);
         }
+
+        // Verify cryptographic signature
+        env.crypto().ed25519_verify(
+            &channel.payer_pubkey,
+            &voucher.signed_payload,
+            &voucher.signature,
+        );
 
         // Expiry check
         if env.ledger().timestamp() > voucher.expires_at {

@@ -18,6 +18,7 @@ import {
   type Voucher, type VoucherAuthorization,
 } from '@stellar-mesh/shared';
 import { signTransactionWithFreighter } from '@stellar-mesh/stellar-client';
+import { Keypair } from '@stellar/stellar-sdk';
 import toast from 'react-hot-toast';
 
 export function PayPage() {
@@ -88,9 +89,16 @@ export function PayPage() {
         .map((b) => b.toString(16).padStart(2, '0'))
         .join('');
 
+      const secret = localStorage.getItem(`session_key_${wallet.address}`);
+      if (!secret) {
+        throw new Error("No session key found. Please create a new payment channel to initialize your session keys.");
+      }
+      const sessionKey = Keypair.fromSecret(secret);
+      const signatureBuffer = sessionKey.sign(Buffer.from(signedPayloadHex, 'hex'));
+
       const authorization: VoucherAuthorization = {
         signerAddress: wallet.address,
-        signature: `offline-auth-${voucherId.slice(0, 16)}`,
+        signature: signatureBuffer.toString('hex'),
         signedPayloadHex,
       };
 
@@ -174,7 +182,7 @@ export function PayPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Left: form */}
         <div className="space-y-4">
           {/* Channel selector */}
