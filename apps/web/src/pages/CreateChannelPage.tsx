@@ -107,7 +107,7 @@ export function CreateChannelPage() {
       
       const client = new MeshChannelClient({
         networkPassphrase: NETWORK_PASSPHRASE,
-        contractId: 'CAJDG4UWXFBW6TT2O5LOQZ7KUOMEBESAESXAQWDFDCMISMVHATXTFNDA',
+        contractId: 'CDSTAPEEGU4L62QEROZOSEAFRQKIC2SEC6HJNPKIOIXAOBRAKIQ3254J',
         rpcUrl: 'https://soroban-testnet.stellar.org',
       });
 
