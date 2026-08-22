@@ -1,138 +1,101 @@
 // ============================================================
-// StellarMesh — Sidebar Navigation (matches reference design)
+// StellarMesh — Sidebar (Swiss × Claymorphism)
 // ============================================================
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import {
-  LayoutDashboard, Zap, CreditCard, Activity,
-  Settings, HelpCircle, Wifi, WifiOff, Loader2,
-  ChevronRight,
+  LayoutDashboard, Wallet, Zap, QrCode, Activity,
+  Settings, BookOpen, ArrowLeftRight, ChevronRight,
 } from 'lucide-react';
-import clsx from 'clsx';
-import { useAppStore, useIsOffline, useWallet } from '../../store/app.store';
 
-const NAV_ITEMS = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-  { to: '/channels', label: 'Channels', icon: Zap, exact: false },
-  { to: '/pay', label: 'Payments', icon: CreditCard, exact: false },
-  { to: '/activity', label: 'Activity', icon: Activity, exact: false },
-] as const;
+const nav = [
+  { to: '/',            label: 'Dashboard',  icon: LayoutDashboard },
+  { to: '/wallet',      label: 'Wallet',     icon: Wallet },
+  { to: '/channels',    label: 'Channels',   icon: ArrowLeftRight },
+  { to: '/pay',         label: 'Payments',   icon: Zap },
+  { to: '/receive',     label: 'Receive',    icon: QrCode },
+  { to: '/activity',    label: 'Activity',   icon: Activity },
+];
 
-const BOTTOM_ITEMS = [
+const bottom = [
   { to: '/settings', label: 'Settings', icon: Settings },
-  { to: '/docs', label: 'Support', icon: HelpCircle },
-] as const;
-
-function NetworkIndicator() {
-  const networkState = useAppStore((s) => s.state);
-  const isOffline = useIsOffline();
-
-  return (
-    <div className={clsx(
-      'flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium',
-      isOffline
-        ? 'bg-accent-yellow/10 text-accent-yellow border border-accent-yellow/20'
-        : networkState === 'ONLINE'
-        ? 'bg-accent-green/10 text-accent-green'
-        : 'bg-text-muted/10 text-text-muted'
-    )}>
-      {isOffline ? (
-        <WifiOff className="w-3.5 h-3.5" />
-      ) : networkState === 'RECONNECTING' || networkState === 'SYNCING' ? (
-        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-      ) : (
-        <Wifi className="w-3.5 h-3.5" />
-      )}
-      <span className="uppercase tracking-wider">
-        {isOffline ? 'Offline' : networkState}
-      </span>
-    </div>
-  );
-}
+  { to: '/docs',     label: 'Support',  icon: BookOpen },
+];
 
 export function Sidebar() {
-  const wallet = useWallet();
-  const navigate = useNavigate();
-
-  const shortAddr = wallet?.address
-    ? `${wallet.address.slice(0, 4)}...${wallet.address.slice(-4)}`
-    : null;
-
   return (
-    <aside className="w-56 bg-bg-secondary border-r border-border-subtle flex flex-col h-screen sticky top-0 overflow-hidden shrink-0">
+    <aside
+      className="w-[220px] shrink-0 flex flex-col py-6 px-3 h-screen overflow-y-auto no-scrollbar"
+      style={{
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(243,240,255,0.85) 100%)',
+        backdropFilter: 'blur(20px)',
+        borderRight: '2px solid rgba(196,181,253,0.3)',
+        boxShadow: '4px 0 24px rgba(0,0,0,0.04)',
+      }}
+    >
       {/* Logo */}
-      <div className="px-4 py-5 border-b border-border-subtle">
-        <span className="text-lg font-bold text-text-primary tracking-tight">
-          Stellar<span className="text-accent-blue">Mesh</span>
-        </span>
+      <div className="flex items-center gap-2.5 px-2 mb-8">
+        <div
+          className="w-9 h-9 rounded-xl flex items-center justify-center"
+          style={{
+            background: 'linear-gradient(145deg, #f05060, #e63946)',
+            boxShadow: '0 4px 0 #c1121f, 0 6px 12px rgba(230,57,70,0.25)',
+          }}
+        >
+          <span className="text-white font-black text-sm leading-none">SM</span>
+        </div>
+        <div>
+          <span className="font-black text-[15px] text-[#1a1a2e] tracking-tight">StellarMesh</span>
+        </div>
       </div>
 
-      {/* Wallet card */}
-      {wallet ? (
-        <div className="mx-3 mt-3 p-3 bg-bg-tertiary rounded-xl border border-border-subtle">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-accent-blue to-accent-cyan flex items-center justify-center text-white text-xs font-bold">
-              {wallet.address.slice(1, 3)}
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs font-medium text-text-primary truncate">Connected Wallet</p>
-              <p className="text-[11px] text-text-muted font-mono">{shortAddr}</p>
-            </div>
-          </div>
-          <NetworkIndicator />
-        </div>
-      ) : (
-        <div className="mx-3 mt-3 p-3 bg-bg-tertiary rounded-xl border border-border-subtle">
-          <p className="text-xs text-text-muted mb-2">No wallet connected</p>
-          <button
-            onClick={() => navigate('/wallet')}
-            className="btn-primary w-full text-xs py-2"
-          >
-            Connect Wallet
-          </button>
-        </div>
-      )}
+      {/* Swiss section rule */}
+      <div className="px-2 mb-4">
+        <div className="swiss-section-title mb-2">Menu</div>
+        <div className="swiss-grid-line" />
+      </div>
 
-      {/* Main nav */}
-      <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto no-scrollbar">
-        {NAV_ITEMS.map(({ to, label, icon: Icon, exact }) => (
+      {/* Navigation */}
+      <nav className="flex flex-col gap-1 flex-1">
+        {nav.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}
-            end={exact}
+            end={to === '/'}
             className={({ isActive }) =>
-              clsx('sidebar-link', isActive && 'active')
+              `sidebar-link ${isActive ? 'active' : ''}`
             }
           >
             <Icon className="w-4 h-4 shrink-0" />
-            {label}
+            <span className="flex-1">{label}</span>
+            <ChevronRight className="w-3 h-3 opacity-40" />
           </NavLink>
         ))}
       </nav>
 
-      {/* CTA */}
-      <div className="px-3 pb-3">
-        <button
-          onClick={() => navigate('/pay')}
-          className="btn-primary w-full text-sm"
-        >
-          Create Offline Payment
-        </button>
-      </div>
-
-      {/* Bottom nav */}
-      <div className="px-2 pb-4 space-y-0.5 border-t border-border-subtle pt-3">
-        {BOTTOM_ITEMS.map(({ to, label, icon: Icon }) => (
+      {/* Bottom links */}
+      <div className="pt-4 border-t-2 border-[#ddd6fe] flex flex-col gap-1">
+        {bottom.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}
             className={({ isActive }) =>
-              clsx('sidebar-link', isActive && 'active')
+              `sidebar-link ${isActive ? 'active' : ''}`
             }
           >
             <Icon className="w-4 h-4 shrink-0" />
-            {label}
+            <span>{label}</span>
           </NavLink>
         ))}
+      </div>
+
+      {/* Create Offline Payment CTA */}
+      <div className="mt-4 px-1">
+        <NavLink to="/pay">
+          <button className="btn-clay-red w-full text-sm py-3 px-4">
+            <Zap className="w-4 h-4" />
+            Create Offline Payment
+          </button>
+        </NavLink>
       </div>
     </aside>
   );
