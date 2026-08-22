@@ -13,7 +13,7 @@ import { xlmToStroops, stroopsToXlm } from '@stellar-mesh/voucher-protocol';
 import type { Channel } from '@stellar-mesh/shared';
 import { generateId, formatDate } from '../lib/utils';
 import { rpc, NETWORK_PASSPHRASE } from '../lib/stellar';
-import { StrKey, Address, nativeToScVal, xdr, TransactionBuilder, Account, Keypair } from '@stellar/stellar-sdk';
+import { StrKey, Address, nativeToScVal, xdr, TransactionBuilder, Account, Keypair, Horizon } from '@stellar/stellar-sdk';
 import { signTransactionWithFreighter } from '@stellar-mesh/stellar-client';
 import { Client as MeshChannelClient } from 'mesh_channel';
 import { Client as MeshRegistryClient } from 'mesh_registry';
@@ -87,6 +87,21 @@ export function CreateChannelPage() {
     setError(null);
 
     try {
+      // Pre-flight: check account exists and has enough XLM
+      try {
+        const horizon = new Horizon.Server('https://horizon-testnet.stellar.org');
+        const acct = await horizon.loadAccount(wallet.address);
+        const xlmBalance = acct.balances.find((b: any) => b.asset_type === 'native')?.balance ?? '0';
+        const needed = parseFloat(form.limitXlm) + 1; // 1 XLM reserve
+        if (parseFloat(xlmBalance) < needed) {
+          throw new Error(`Insufficient balance: you have ${parseFloat(xlmBalance).toFixed(2)} XLM but need at least ${needed.toFixed(2)} XLM (channel limit + 1 XLM reserve).`);
+        }
+      } catch (e: any) {
+        if (e?.message?.includes('Insufficient')) throw e;
+        // Account not found = likely not funded
+        throw new Error('Account not found on Testnet. Please fund your account via Friendbot first.');
+      }
+
       const expiresAtUnix = Math.floor(Date.now() / 1000) + parseInt(form.expiryDays) * 86400;
       const limitStroops = BigInt(xlmToStroops(form.limitXlm).toString());
       
@@ -119,7 +134,15 @@ export function CreateChannelPage() {
       const sendResult = await rpc.sendTransaction(txBuilder as any);
       
       if (sendResult.status === 'ERROR') {
-         throw new Error(`Transaction failed: ${sendResult.errorResult?.toString() ?? 'unknown'}`);
+        let errMsg = 'Contract invocation failed — check your balance and channel limit';
+        try {
+          const xdrError = sendResult.errorResult;
+          if (xdrError) {
+            // toXDR() gives base64, which is inspectable
+            errMsg = (xdrError as any).toXDR?.('base64') ?? JSON.stringify(xdrError);
+          }
+        } catch { /* keep default message */ }
+        throw new Error(`Transaction failed: ${errMsg}`);
       }
       
       const contractChannelId = sendResult.hash;
