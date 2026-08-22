@@ -38,7 +38,7 @@ function WalletCard() {
   };
 
   return (
-    <div className="clay-card-blue p-6 flex flex-col justify-between h-full relative overflow-hidden">
+    <div className="clay-card-blue p-6 flex flex-col justify-between w-full flex-1 relative overflow-hidden">
       {/* Decorative background shapes */}
       <div className="absolute -top-10 -right-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl pointer-events-none"></div>
       
@@ -98,7 +98,7 @@ function NetworkStatusCard() {
   }
 
   return (
-    <div className="clay-card-mint p-6 h-full flex flex-col justify-between relative overflow-hidden">
+    <div className="clay-card-mint p-6 flex flex-col justify-between w-full flex-1 relative overflow-hidden">
       <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white opacity-10 rounded-full blur-xl pointer-events-none"></div>
       
       <div className="relative z-10">
@@ -166,7 +166,7 @@ function RecentActivity() {
     .slice(0, 4);
 
   return (
-    <div className="clay-card-cream p-6 h-full relative">
+    <div className="clay-card-cream p-6 w-full flex-1 relative">
       <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-bl-[100px] shadow-[inset_0_-4px_12px_rgba(0,0,0,0.03)] opacity-50 pointer-events-none"></div>
       
       <h3 className="text-sm font-black text-[#e63946] mb-6 uppercase tracking-wider relative z-10">Recent Activity</h3>
@@ -254,20 +254,20 @@ export function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
         
         {/* Top left: Wallet */}
-        <div className="md:col-span-8">
-          <h2 className="swiss-section-title block mb-4">Wallet Balance</h2>
+        <div className="md:col-span-8 flex flex-col">
+          <h2 className="swiss-section-title mb-4">Wallet Balance</h2>
           <WalletCard />
         </div>
 
         {/* Top right: Network */}
-        <div className="md:col-span-4">
-          <h2 className="swiss-section-title block mb-4">Network Status</h2>
+        <div className="md:col-span-4 flex flex-col">
+          <h2 className="swiss-section-title mb-4">Network Status</h2>
           <NetworkStatusCard />
         </div>
       </div>
 
-      <div>
-        <h2 className="swiss-section-title block mb-4">Quick Actions</h2>
+      <div className="flex flex-col mt-8">
+        <h2 className="swiss-section-title mb-4">Quick Actions</h2>
         <QuickActions />
       </div>
 
@@ -280,9 +280,7 @@ export function DashboardPage() {
          </div>
          <div className="md:col-span-4 flex flex-col">
             {/* Title inside the card is enough for Recent Activity */}
-            <div className="flex-1">
-              <RecentActivity />
-            </div>
+            <RecentActivity />
          </div>
       </div>
     </div>
