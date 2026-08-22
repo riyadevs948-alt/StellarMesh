@@ -130,6 +130,7 @@ async function settleVoucher(
       networkPassphrase,
       contractId: 'CDSTAPEEGU4L62QEROZOSEAFRQKIC2SEC6HJNPKIOIXAOBRAKIQ3254J',
       rpcUrl: 'https://soroban-testnet.stellar.org',
+      publicKey: signerAddress,
     });
 
     const signatureBuffer = Buffer.from(voucher.authorization!.signature, 'hex');

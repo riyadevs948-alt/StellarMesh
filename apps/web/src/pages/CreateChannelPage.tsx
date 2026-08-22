@@ -109,6 +109,7 @@ export function CreateChannelPage() {
         networkPassphrase: NETWORK_PASSPHRASE,
         contractId: 'CDSTAPEEGU4L62QEROZOSEAFRQKIC2SEC6HJNPKIOIXAOBRAKIQ3254J',
         rpcUrl: 'https://soroban-testnet.stellar.org',
+        publicKey: wallet.address,
       });
 
       // Generate a session key for offline signing and store it
