@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — Wallet Management Page
+// Veyra — Wallet Management Page
 // Connect/disconnect Freighter, multi-wallet support
 // ============================================================
 import { useState } from 'react';
@@ -90,7 +90,7 @@ export function WalletPage() {
           </div>
           <h2 className="text-lg font-semibold mb-2">Connect Freighter</h2>
           <p className="text-text-muted text-sm mb-6 max-w-xs mx-auto">
-            StellarMesh uses Freighter wallet for signing transactions on Stellar Testnet.
+            Veyra uses Freighter wallet for signing transactions on Stellar Testnet.
           </p>
           {error && <ErrorBanner message={error} className="mb-4 text-left" />}
           <button onClick={handleConnect} disabled={connecting} className="btn-primary px-8 py-3">

@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — TopBar (Swiss × Claymorphism)
+// Veyra — TopBar (Swiss × Claymorphism)
 // ============================================================
 import { WifiOff, Wifi, RefreshCw, Menu } from 'lucide-react';
 import { useAppStore, useIsOffline } from '../../store/app.store';

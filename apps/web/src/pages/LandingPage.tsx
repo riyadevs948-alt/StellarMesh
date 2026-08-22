@@ -16,7 +16,7 @@ export function LandingPage() {
            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#f05060] to-[#e63946] shadow-[0_3px_0_#c1121f] flex items-center justify-center">
              <span className="text-white font-black text-xs leading-none">SM</span>
            </div>
-           <span className="text-xl font-black text-[#1a1a2e] tracking-tight">StellarMesh</span>
+           <span className="text-xl font-black text-[#1a1a2e] tracking-tight">Veyra</span>
         </div>
         <button onClick={() => navigate('/dashboard')} className="btn-clay-white !px-6 !py-2.5">
           Launch App <ArrowRight className="w-4 h-4" />
@@ -37,7 +37,7 @@ export function LandingPage() {
         
         <p className="text-[#4a4a6a] font-medium text-xl md:text-2xl max-w-2xl mb-12">
           Temporary connectivity shouldn't stop people from exchanging value. 
-          StellarMesh brings offline payments to the Stellar network.
+          Veyra brings offline payments to the Stellar network.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4">

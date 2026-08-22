@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — Settlement Queue Page
+// Veyra — Settlement Queue Page
 // Matches reference: stats cards, voucher list with status, retry
 // ============================================================
 import { useState, useEffect } from 'react';

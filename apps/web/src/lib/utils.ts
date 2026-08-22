@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — Date utility (no date-fns dep needed)
+// Veyra — Date utility (no date-fns dep needed)
 // ============================================================
 
 export function formatDistanceToNow(date: Date): string {

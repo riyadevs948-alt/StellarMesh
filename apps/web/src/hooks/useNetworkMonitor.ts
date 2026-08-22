@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — Network State Machine Hook
+// Veyra — Network State Machine Hook
 // Combines browser connectivity + actual RPC health checks
 // ============================================================
 import { useEffect, useRef, useCallback } from 'react';

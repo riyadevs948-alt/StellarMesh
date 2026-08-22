@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — Dashboard Page (Swiss × Claymorphism)
+// Veyra — Dashboard Page (Swiss × Claymorphism)
 // ============================================================
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -129,7 +129,7 @@ function QuickActions() {
 
   const handleAction = (action: any) => {
     if (action.to === '/') {
-      toast.error('Feature coming soon in StellarMesh v2!');
+      toast.error('Feature coming soon in Veyra v2!');
     } else {
       navigate(action.to);
     }
@@ -245,7 +245,7 @@ export function DashboardPage() {
            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#6fa3f7] to-[#5b8def] shadow-clay-blue mx-auto flex items-center justify-center mb-8 relative z-10 hover:animate-bounce-clay cursor-pointer">
              <Zap className="w-10 h-10 text-white" />
            </div>
-           <h2 className="text-3xl font-black text-[#1a1a2e] mb-3 tracking-tight">StellarMesh</h2>
+           <h2 className="text-3xl font-black text-[#1a1a2e] mb-3 tracking-tight">Veyra</h2>
            <p className="text-[#4a4a6a] font-medium mb-8 leading-relaxed">
              Connect your Freighter wallet to start making fast, offline, clay-powered payments.
            </p>

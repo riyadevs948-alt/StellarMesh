@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — Stellar RPC Client
+// Veyra — Stellar RPC Client
 // ============================================================
 import { rpc as SorobanRpc, TransactionBuilder, Networks, Account, Operation, Asset, Memo } from '@stellar/stellar-sdk';
 import type { NetworkError } from '@stellar-mesh/shared';

@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — IndexedDB Persistence Layer
+// Veyra — IndexedDB Persistence Layer
 // ============================================================
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 import type {
@@ -10,7 +10,7 @@ import type {
 const DB_NAME = 'stellar-mesh';
 const DB_VERSION = 1;
 
-interface StellarMeshDB extends DBSchema {
+interface VeyraDB extends DBSchema {
   wallet_sessions: {
     key: string;
     value: WalletSession;
@@ -47,12 +47,12 @@ interface StellarMeshDB extends DBSchema {
   };
 }
 
-let dbInstance: IDBPDatabase<StellarMeshDB> | null = null;
+let dbInstance: IDBPDatabase<VeyraDB> | null = null;
 
-async function getDB(): Promise<IDBPDatabase<StellarMeshDB>> {
+async function getDB(): Promise<IDBPDatabase<VeyraDB>> {
   if (dbInstance) return dbInstance;
 
-  dbInstance = await openDB<StellarMeshDB>(DB_NAME, DB_VERSION, {
+  dbInstance = await openDB<VeyraDB>(DB_NAME, DB_VERSION, {
     upgrade(db) {
       // wallet_sessions
       const sessionStore = db.createObjectStore('wallet_sessions', { keyPath: 'id' });

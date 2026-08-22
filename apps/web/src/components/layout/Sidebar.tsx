@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — Sidebar (Swiss × Claymorphism)
+// Veyra — Sidebar (Swiss × Claymorphism)
 // ============================================================
 import { NavLink, Link } from 'react-router-dom';
 import {
@@ -44,7 +44,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           <span className="text-white font-black text-sm leading-none">SM</span>
         </div>
         <div>
-          <span className="font-black text-[15px] text-[#1a1a2e] tracking-tight">StellarMesh</span>
+          <span className="font-black text-[15px] text-[#1a1a2e] tracking-tight">Veyra</span>
         </div>
       </Link>
 
