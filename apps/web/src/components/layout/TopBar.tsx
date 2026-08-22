@@ -39,7 +39,9 @@ export function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
             <Menu className="w-5 h-5" />
           </button>
           
-          <span className="font-black text-lg text-[#1a1a2e] md:hidden">V</span>
+          <div className="md:hidden w-7 h-7 rounded-lg overflow-hidden bg-white shadow-sm border border-[#e5e7eb]">
+            <img src="/logo.jpg" alt="Veyra Logo" className="w-full h-full object-cover" />
+          </div>
         </div>
 
         <div className="flex items-center gap-4">
