@@ -175,15 +175,33 @@ export function CreateChannelPage() {
         throw new Error(errMsg);
       }
       
-      const contractChannelId = sendTransactionResponse?.hash || tx.built?.hash().toString('hex') || '';
+      const contractChannelId = result ? Buffer.from(result.unwrap()).toString('hex') : (sendTransactionResponse?.hash || tx.built?.hash().toString('hex') || '');
+  
+      toast.loading('Please sign in Freighter to fund channel...', { id: 'channel-create' });
+      const fundTx = await client.fund_channel({
+        payer: wallet.address,
+        channel_id: Buffer.from(contractChannelId, 'hex'),
+        amount: limitStroops
+      });
+      
+      const { sendTransactionResponse: fundRes } = await fundTx.signAndSend({
+        signTransaction: async (txXDR) => {
+          const signed = await signTransactionWithFreighter(txXDR, wallet.address, NETWORK_PASSPHRASE);
+          return { signedTxXdr: signed, signerAddress: wallet.address };
+        }
+      });
+      
+      if (fundRes?.status === 'ERROR') {
+        throw new Error('Channel was created but funding failed. Please try again later.');
+      }
 
       const channel: Channel = {
         id: generateId(),
         payer: wallet.address,
         payee: form.recipient,
         limitAmount: limitStroops.toString(),
-        availableBalance: '0',
-        totalDeposited: '0',
+        availableBalance: limitStroops.toString(),
+        totalDeposited: limitStroops.toString(),
         settledAmount: '0',
         expiresAt: new Date(expiresAtUnix * 1000).toISOString(),
         createdAt: new Date().toISOString(),
