@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — Settlement Engine
+// Veyra — Settlement Engine
 // Background service that drains the offline settlement queue
 // when internet connectivity is detected.
 // ============================================================

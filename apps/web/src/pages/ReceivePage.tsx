@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — Receive / Scan Voucher Page
+// Veyra — Receive / Scan Voucher Page
 // Matches reference: QR scanner, voucher validation display
 // ============================================================
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -123,7 +123,7 @@ export function ReceivePage() {
   return (
     <div className="p-6 animate-fade-in max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-text-primary">Scan StellarMesh Voucher</h1>
+        <h1 className="text-2xl font-bold text-text-primary">Scan Veyra Voucher</h1>
         <p className="text-text-muted text-sm mt-1">
           Scan a QR code or paste a voucher payload to receive a payment.
         </p>

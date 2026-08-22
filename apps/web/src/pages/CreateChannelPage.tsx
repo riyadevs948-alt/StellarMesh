@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — Create Channel Flow (multi-step)
+// Veyra — Create Channel Flow (multi-step)
 // Matches reference screenshot 1: step wizard, recipient, limit, expiry
 // ============================================================
 import { useState } from 'react';

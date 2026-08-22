@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — useWalletInit Hook
+// Veyra — useWalletInit Hook
 // Restores wallet session from IndexedDB on app boot,
 // then auto-loads balance and channels.
 // ============================================================

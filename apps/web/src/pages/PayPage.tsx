@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — Create Offline Payment Page
+// Veyra — Create Offline Payment Page
 // Matches reference: channel selector, amount, recipient, QR display
 // ============================================================
 import { useState, useCallback } from 'react';

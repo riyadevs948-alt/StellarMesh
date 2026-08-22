@@ -4,7 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 // ============================================================
-// StellarMesh Frontend Tests
+// Veyra Frontend Tests
 // ============================================================
 
 // ─── Test 1: Voucher Protocol — encode/decode round-trip ────

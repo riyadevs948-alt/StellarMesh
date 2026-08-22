@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — App Layout Shell
+// Veyra — App Layout Shell
 // ============================================================
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';

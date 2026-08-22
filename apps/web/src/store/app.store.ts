@@ -1,5 +1,5 @@
 // ============================================================
-// StellarMesh — Global Zustand Store
+// Veyra — Global Zustand Store
 // ============================================================
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
