@@ -128,7 +128,7 @@ async function settleVoucher(
     const { Client: MeshChannelClient } = await import('mesh_channel');
     const client = new MeshChannelClient({
       networkPassphrase,
-      contractId: 'CAJDG4UWXFBW6TT2O5LOQZ7KUOMEBESAESXAQWDFDCMISMVHATXTFNDA',
+      contractId: 'CDSTAPEEGU4L62QEROZOSEAFRQKIC2SEC6HJNPKIOIXAOBRAKIQ3254J',
       rpcUrl: 'https://soroban-testnet.stellar.org',
     });
 
