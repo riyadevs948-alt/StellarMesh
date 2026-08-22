@@ -1,7 +1,7 @@
 // ============================================================
 // StellarMesh — Sidebar (Swiss × Claymorphism)
 // ============================================================
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import {
   LayoutDashboard, Wallet, Zap, QrCode, Activity,
   Settings, BookOpen, ArrowLeftRight, ChevronRight,
@@ -33,7 +33,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
       }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-2 mb-8">
+      <Link to="/" onClick={onClose} className="flex items-center gap-2.5 px-2 mb-8 cursor-pointer hover:opacity-80 transition-opacity block w-max">
         <div
           className="w-9 h-9 rounded-xl flex items-center justify-center"
           style={{
@@ -46,7 +46,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         <div>
           <span className="font-black text-[15px] text-[#1a1a2e] tracking-tight">StellarMesh</span>
         </div>
-      </div>
+      </Link>
 
       {/* Swiss section rule */}
       <div className="px-2 mb-4">
