@@ -4,6 +4,7 @@ use soroban_sdk::{
     contract, contracterror, contractimpl, contracttype, symbol_short, token, Address, Bytes,
     BytesN, Env,
 };
+use soroban_sdk::xdr::ToXdr;
 
 // ============================================================
 // Inter-contract Interface for MeshRegistry
@@ -181,7 +182,7 @@ impl MeshChannel {
         }
 
         // Generate deterministic channel ID
-        let channel_id = Self::generate_channel_id(&env, &payer, &payee, expires_at);
+        let channel_id = Self::generate_channel_id(&env, &payer, &payee, &payer_pubkey, expires_at);
 
         if env
             .storage()
@@ -558,16 +559,17 @@ impl MeshChannel {
 
     fn generate_channel_id(
         env: &Env,
-        _payer: &Address,
-        _payee: &Address,
+        payer: &Address,
+        payee: &Address,
+        payer_pubkey: &BytesN<32>,
         expires_at: u64,
     ) -> BytesN<32> {
         let mut data = Bytes::new(env);
-        // Build a unique seed from payer + payee + expires_at + timestamp
-        let ts_bytes = env.ledger().timestamp().to_be_bytes();
-        let exp_bytes = expires_at.to_be_bytes();
-        data.extend_from_slice(&ts_bytes);
-        data.extend_from_slice(&exp_bytes);
+        // Build a unique deterministic seed from payer + payee + session key + expires_at
+        data.append(&payer.to_xdr(env));
+        data.append(&payee.to_xdr(env));
+        data.append(&payer_pubkey.to_xdr(env));
+        data.extend_from_slice(&expires_at.to_be_bytes());
         // SHA-256 produces Hash<32>, which converts to BytesN<32>
         env.crypto().sha256(&data).into()
     }
