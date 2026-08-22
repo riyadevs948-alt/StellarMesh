@@ -151,19 +151,21 @@ async function settleVoucher(
       }
     });
 
-    const unsignedXdr = tx.built!.toXDR();
-
-    // Step 3: Sign
-    await updateAttempt('AWAITING_SIGNATURE');
-    const signedXdr = await signTransactionWithFreighter(
-      unsignedXdr,
-      signerAddress,
-      networkPassphrase
-    );
-
-    // Step 4: Submit
-    await updateAttempt('SUBMITTING');
-    const { txHash, ledger } = await submitTransaction(signedXdr);
+      // Step 3: Sign & Submit
+      await updateAttempt('AWAITING_SIGNATURE');
+      const { result, sendTransactionResponse } = await tx.signAndSend({
+        signTransaction: async (txXDR) => {
+          const signed = await signTransactionWithFreighter(txXDR, signerAddress, networkPassphrase);
+          return { signedTxXdr: signed, signerAddress };
+        }
+      });
+      
+      if (sendTransactionResponse?.status === 'ERROR') {
+          throw new Error('Settlement contract invocation failed');
+      }
+      
+      const txHash = sendTransactionResponse?.hash || tx.built?.hash().toString('hex') || '';
+      const ledger = sendTransactionResponse?.latestLedger || 0;
 
     // Step 5: Confirmed
     await updateAttempt('SETTLED');
