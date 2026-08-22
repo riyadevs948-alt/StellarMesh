@@ -15,6 +15,7 @@ import { Skeleton } from '../components/ui';
 import { stroopsToXlm } from '@stellar-mesh/voucher-protocol';
 import type { Voucher } from '@stellar-mesh/shared';
 import { formatDistanceToNow } from '../lib/utils';
+import toast from 'react-hot-toast';
 
 function WalletCard() {
   const wallet = useWallet();
@@ -126,6 +127,14 @@ function QuickActions() {
   const navigate = useNavigate();
   const isOffline = useIsOffline();
 
+  const handleAction = (action: any) => {
+    if (action.to === '/') {
+      toast.error('Feature coming soon in StellarMesh v2!');
+    } else {
+      navigate(action.to);
+    }
+  };
+
   const actions = [
     { label: 'Transfer', icon: ArrowRightLeft, to: '/pay', accent: 'red', disabled: false },
     { label: 'Swap', icon: RefreshCw, to: '/', accent: 'red', disabled: isOffline },
@@ -139,7 +148,7 @@ function QuickActions() {
         {actions.map((action, i) => (
           <button
             key={i}
-            onClick={() => navigate(action.to)}
+            onClick={() => handleAction(action)}
             disabled={action.disabled}
             className={`
               flex items-center justify-center gap-2 py-4 rounded-[20px] font-bold text-[15px]
