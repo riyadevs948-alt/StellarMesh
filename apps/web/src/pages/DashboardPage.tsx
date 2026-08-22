@@ -135,7 +135,7 @@ function QuickActions() {
 
   return (
     <div className="clay-card p-4">
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {actions.map((action, i) => (
           <button
             key={i}

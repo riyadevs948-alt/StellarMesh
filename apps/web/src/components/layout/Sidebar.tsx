@@ -21,10 +21,10 @@ const bottom = [
   { to: '/docs',     label: 'Support',  icon: BookOpen },
 ];
 
-export function Sidebar() {
+export function Sidebar({ onClose }: { onClose?: () => void }) {
   return (
     <aside
-      className="w-[220px] shrink-0 flex flex-col py-6 px-3 h-screen overflow-y-auto no-scrollbar"
+      className="w-[240px] shrink-0 flex flex-col py-6 px-4 h-full overflow-y-auto no-scrollbar"
       style={{
         background: 'linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(243,240,255,0.85) 100%)',
         backdropFilter: 'blur(20px)',
@@ -61,6 +61,7 @@ export function Sidebar() {
             key={to}
             to={to}
             end={to === '/'}
+            onClick={onClose}
             className={({ isActive }) =>
               `sidebar-link ${isActive ? 'active' : ''}`
             }
@@ -78,6 +79,7 @@ export function Sidebar() {
           <NavLink
             key={to}
             to={to}
+            onClick={onClose}
             className={({ isActive }) =>
               `sidebar-link ${isActive ? 'active' : ''}`
             }
