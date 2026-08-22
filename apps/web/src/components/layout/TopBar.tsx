@@ -39,7 +39,7 @@ export function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
             <Menu className="w-5 h-5" />
           </button>
           
-          <span className="font-black text-lg text-[#1a1a2e] md:hidden">SM</span>
+          <span className="font-black text-lg text-[#1a1a2e] md:hidden">V</span>
         </div>
 
         <div className="flex items-center gap-4">
