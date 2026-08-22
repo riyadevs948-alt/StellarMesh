@@ -128,16 +128,18 @@ export function CreateChannelPage() {
       });
 
       toast.loading('Please sign in Freighter to create channel...', { id: 'channel-create' });
-      const signedXdr = await signTransactionWithFreighter(tx.built!.toXDR(), wallet.address, NETWORK_PASSPHRASE);
       
-      toast.loading('Submitting to Stellar Testnet...', { id: 'channel-create' });
-      const txBuilder = TransactionBuilder.fromXDR(signedXdr, NETWORK_PASSPHRASE);
-      const sendResult = await rpc.sendTransaction(txBuilder as any);
+      const { result, sendTransactionResponse } = await tx.signAndSend({
+        signTransaction: async (txXDR) => {
+          const signed = await signTransactionWithFreighter(txXDR, wallet.address, NETWORK_PASSPHRASE);
+          return { signedTxXdr: signed, signerAddress: wallet.address };
+        }
+      });
       
-      if (sendResult.status === 'ERROR') {
+      if (sendTransactionResponse?.status === 'ERROR') {
         let errMsg = 'Contract invocation failed — check your balance and channel limit';
         try {
-          const xdrError = sendResult.errorResult as any;
+          const xdrError = sendTransactionResponse.errorResult as any;
           if (xdrError) {
             // xdrError is xdr.TransactionResult — walk the XDR tree for the real code
             const txCode = xdrError.result?.()?.switch?.()?.name ?? '';       // e.g. "txFailed"
@@ -173,7 +175,7 @@ export function CreateChannelPage() {
         throw new Error(errMsg);
       }
       
-      const contractChannelId = sendResult.hash;
+      const contractChannelId = sendTransactionResponse?.hash || tx.built?.hash().toString('hex') || '';
 
       const channel: Channel = {
         id: generateId(),
