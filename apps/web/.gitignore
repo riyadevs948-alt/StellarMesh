@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Allow compiled contracts
+!src/contracts/*/dist
+!src/contracts/*/dist/**

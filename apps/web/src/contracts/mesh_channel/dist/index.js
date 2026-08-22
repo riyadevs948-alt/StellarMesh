@@ -1,0 +1,78 @@
+import { Buffer } from "buffer";
+import { Client as ContractClient, Spec as ContractSpec, } from "@stellar/stellar-sdk/contract";
+export * from "@stellar/stellar-sdk";
+export * as contract from "@stellar/stellar-sdk/contract";
+export * as rpc from "@stellar/stellar-sdk/rpc";
+if (typeof window !== "undefined") {
+    //@ts-ignore Buffer exists
+    window.Buffer = window.Buffer || Buffer;
+}
+export const networks = {
+    testnet: {
+        networkPassphrase: "Test SDF Network ; September 2015",
+        contractId: "CAJDG4UWXFBW6TT2O5LOQZ7KUOMEBESAESXAQWDFDCMISMVHATXTFNDA",
+    }
+};
+export const ChannelError = {
+    1: { message: "AlreadyInitialized" },
+    2: { message: "NotInitialized" },
+    3: { message: "Unauthorized" },
+    4: { message: "ChannelNotFound" },
+    5: { message: "ChannelAlreadyExists" },
+    6: { message: "ChannelNotActive" },
+    7: { message: "ChannelExpired" },
+    8: { message: "ChannelInsufficientBalance" },
+    9: { message: "VoucherExpired" },
+    10: { message: "VoucherAlreadySettled" },
+    11: { message: "VoucherInvalidAmount" },
+    12: { message: "VoucherWrongRecipient" },
+    13: { message: "VoucherWrongChannel" },
+    14: { message: "VoucherSequenceReused" },
+    15: { message: "VoucherInvalidSignature" },
+    16: { message: "InvalidAmount" },
+    17: { message: "InvalidExpiry" },
+    18: { message: "ParticipantNotActive" },
+    19: { message: "ChannelCancelled" },
+    20: { message: "AmountExceedsLimit" },
+    21: { message: "InvalidNonce" }
+};
+export class Client extends ContractClient {
+    options;
+    static async deploy(
+    /** Options for initializing a Client as well as for calling a method, with extras specific to deploying. */
+    options) {
+        return ContractClient.deploy(null, options);
+    }
+    constructor(options) {
+        super(new ContractSpec(["AAAAAQAAAAAAAAAAAAAAB0NoYW5uZWwAAAAACwAAAAAAAAAKY2hhbm5lbF9pZAAAAAAD7gAAACAAAAAAAAAACmNyZWF0ZWRfYXQAAAAAAAYAAAAAAAAAEGRlcG9zaXRlZF9hbW91bnQAAAALAAAAAAAAAApleHBpcmVzX2F0AAAAAAAGAAAAAAAAAAxsaW1pdF9hbW91bnQAAAALAAAAAAAAAAVwYXllZQAAAAAAABMAAAAAAAAABXBheWVyAAAAAAAAEwAAAAAAAAAMcGF5ZXJfcHVia2V5AAAD7gAAACAAAAAAAAAAEHNlcXVlbmNlX2NvdW50ZXIAAAAGAAAAAAAAAA5zZXR0bGVkX2Ftb3VudAAAAAAACwAAAAAAAAAGc3RhdHVzAAAAAAfQAAAADUNoYW5uZWxTdGF0dXMAAAA=",
+            "AAAAAgAAAAAAAAAAAAAAB0RhdGFLZXkAAAAACAAAAAAAAAAAAAAABUFkbWluAAAAAAAAAAAAAAAAAAAKUmVnaXN0cnlJZAAAAAAAAAAAAAAAAAALSW5pdGlhbGl6ZWQAAAAAAQAAAAAAAAAHQ2hhbm5lbAAAAAABAAAD7gAAACAAAAABAAAAAAAAAAlVc2VkTm9uY2UAAAAAAAACAAAD7gAAACAAAAAGAAAAAQAAAAAAAAALVXNlZFZvdWNoZXIAAAAAAQAAAA4AAAAAAAAAAAAAAAxDaGFubmVsQ291bnQAAAAAAAAAAAAAAAhYbG1Bc3NldA==",
+            "AAAABAAAAAAAAAAAAAAADENoYW5uZWxFcnJvcgAAABUAAAAAAAAAEkFscmVhZHlJbml0aWFsaXplZAAAAAAAAQAAAAAAAAAOTm90SW5pdGlhbGl6ZWQAAAAAAAIAAAAAAAAADFVuYXV0aG9yaXplZAAAAAMAAAAAAAAAD0NoYW5uZWxOb3RGb3VuZAAAAAAEAAAAAAAAABRDaGFubmVsQWxyZWFkeUV4aXN0cwAAAAUAAAAAAAAAEENoYW5uZWxOb3RBY3RpdmUAAAAGAAAAAAAAAA5DaGFubmVsRXhwaXJlZAAAAAAABwAAAAAAAAAaQ2hhbm5lbEluc3VmZmljaWVudEJhbGFuY2UAAAAAAAgAAAAAAAAADlZvdWNoZXJFeHBpcmVkAAAAAAAJAAAAAAAAABVWb3VjaGVyQWxyZWFkeVNldHRsZWQAAAAAAAAKAAAAAAAAABRWb3VjaGVySW52YWxpZEFtb3VudAAAAAsAAAAAAAAAFVZvdWNoZXJXcm9uZ1JlY2lwaWVudAAAAAAAAAwAAAAAAAAAE1ZvdWNoZXJXcm9uZ0NoYW5uZWwAAAAADQAAAAAAAAAVVm91Y2hlclNlcXVlbmNlUmV1c2VkAAAAAAAADgAAAAAAAAAXVm91Y2hlckludmFsaWRTaWduYXR1cmUAAAAADwAAAAAAAAANSW52YWxpZEFtb3VudAAAAAAAABAAAAAAAAAADUludmFsaWRFeHBpcnkAAAAAAAARAAAAAAAAABRQYXJ0aWNpcGFudE5vdEFjdGl2ZQAAABIAAAAAAAAAEENoYW5uZWxDYW5jZWxsZWQAAAATAAAAAAAAABJBbW91bnRFeGNlZWRzTGltaXQAAAAAABQAAAAAAAAADEludmFsaWROb25jZQAAABU=",
+            "AAAAAAAAAAAAAAAId2l0aGRyYXcAAAACAAAAAAAAAAZjYWxsZXIAAAAAABMAAAAAAAAACmNoYW5uZWxfaWQAAAAAA+4AAAAgAAAAAQAAA+kAAAALAAAH0AAAAAxDaGFubmVsRXJyb3I=",
+            "AAAAAgAAAAAAAAAAAAAADUNoYW5uZWxTdGF0dXMAAAAAAAAFAAAAAAAAAAAAAAAGQWN0aXZlAAAAAAAAAAAAAAAAAAhEcmFpbmluZwAAAAAAAAAAAAAABkNsb3NlZAAAAAAAAAAAAAAAAAAJQ2FuY2VsbGVkAAAAAAAAAAAAAAAAAAAHRXhwaXJlZAA=",
+            "AAAAAQAAAAAAAAAAAAAADlZvdWNoZXJQYXlsb2FkAAAAAAAJAAAAAAAAAAZhbW91bnQAAAAAAAsAAAAAAAAACmNoYW5uZWxfaWQAAAAAA+4AAAAgAAAAAAAAAApleHBpcmVzX2F0AAAAAAAGAAAAAAAAAAVwYXllZQAAAAAAABMAAAAAAAAABXBheWVyAAAAAAAAEwAAAAAAAAAIc2VxdWVuY2UAAAAGAAAAAAAAAAlzaWduYXR1cmUAAAAAAAPuAAAAQAAAAAAAAAAOc2lnbmVkX3BheWxvYWQAAAAAAA4AAAAAAAAACnZvdWNoZXJfaWQAAAAAAA4=",
+            "AAAAAAAAAAAAAAAKaW5pdGlhbGl6ZQAAAAAAAgAAAAAAAAAFYWRtaW4AAAAAAAATAAAAAAAAAAtyZWdpc3RyeV9pZAAAAAATAAAAAQAAA+kAAAACAAAH0AAAAAxDaGFubmVsRXJyb3I=",
+            "AAAAAAAAAAAAAAALZ2V0X2NoYW5uZWwAAAAAAQAAAAAAAAAKY2hhbm5lbF9pZAAAAAAD7gAAACAAAAABAAAD6QAAB9AAAAAHQ2hhbm5lbAAAAAfQAAAADENoYW5uZWxFcnJvcg==",
+            "AAAAAAAAAAAAAAAMZnVuZF9jaGFubmVsAAAAAwAAAAAAAAAFcGF5ZXIAAAAAAAATAAAAAAAAAApjaGFubmVsX2lkAAAAAAPuAAAAIAAAAAAAAAAGYW1vdW50AAAAAAALAAAAAQAAA+kAAAALAAAH0AAAAAxDaGFubmVsRXJyb3I=",
+            "AAAAAAAAAAAAAAAMZ2V0X3JlZ2lzdHJ5AAAAAAAAAAEAAAPpAAAAEwAAB9AAAAAMQ2hhbm5lbEVycm9y",
+            "AAAAAAAAAAAAAAANY2hhbm5lbF9jb3VudAAAAAAAAAAAAAABAAAABA==",
+            "AAAAAAAAAAAAAAAOY2FuY2VsX2NoYW5uZWwAAAAAAAIAAAAAAAAABmNhbGxlcgAAAAAAEwAAAAAAAAAKY2hhbm5lbF9pZAAAAAAD7gAAACAAAAABAAAD6QAAAAIAAAfQAAAADENoYW5uZWxFcnJvcg==",
+            "AAAAAAAAAAAAAAAOY3JlYXRlX2NoYW5uZWwAAAAAAAUAAAAAAAAABXBheWVyAAAAAAAAEwAAAAAAAAAMcGF5ZXJfcHVia2V5AAAD7gAAACAAAAAAAAAABXBheWVlAAAAAAAAEwAAAAAAAAAMbGltaXRfYW1vdW50AAAACwAAAAAAAAAKZXhwaXJlc19hdAAAAAAABgAAAAEAAAPpAAAD7gAAACAAAAfQAAAADENoYW5uZWxFcnJvcg==",
+            "AAAAAAAAAAAAAAAOZ2V0X3VzZWRfbm9uY2UAAAAAAAIAAAAAAAAACmNoYW5uZWxfaWQAAAAAA+4AAAAgAAAAAAAAAAhzZXF1ZW5jZQAAAAYAAAABAAAAAQ==",
+            "AAAAAAAAAAAAAAAOc2V0dGxlX3ZvdWNoZXIAAAAAAAIAAAAAAAAAB3NldHRsZXIAAAAAEwAAAAAAAAAHdm91Y2hlcgAAAAfQAAAADlZvdWNoZXJQYXlsb2FkAAAAAAABAAAD6QAAAAsAAAfQAAAADENoYW5uZWxFcnJvcg==",
+            "AAAAAAAAAAAAAAATZ2V0X2NoYW5uZWxfYmFsYW5jZQAAAAABAAAAAAAAAApjaGFubmVsX2lkAAAAAAPuAAAAIAAAAAEAAAPpAAAACwAAB9AAAAAMQ2hhbm5lbEVycm9y"]), options);
+        this.options = options;
+    }
+    fromJSON = {
+        withdraw: (this.txFromJSON),
+        initialize: (this.txFromJSON),
+        get_channel: (this.txFromJSON),
+        fund_channel: (this.txFromJSON),
+        get_registry: (this.txFromJSON),
+        channel_count: (this.txFromJSON),
+        cancel_channel: (this.txFromJSON),
+        create_channel: (this.txFromJSON),
+        get_used_nonce: (this.txFromJSON),
+        settle_voucher: (this.txFromJSON),
+        get_channel_balance: (this.txFromJSON)
+    };
+}
