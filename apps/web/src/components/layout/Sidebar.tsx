@@ -37,11 +37,11 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         <div
           className="w-9 h-9 rounded-xl flex items-center justify-center"
           style={{
-            background: 'linear-gradient(145deg, #f05060, #e63946)',
-            boxShadow: '0 4px 0 #c1121f, 0 6px 12px rgba(230,57,70,0.25)',
+            background: 'linear-gradient(145deg, #8b5cf6, #6d28d9)',
+            boxShadow: '0 4px 0 #4c1d95, 0 6px 12px rgba(109,40,217,0.25)',
           }}
         >
-          <span className="text-white font-black text-sm leading-none">SM</span>
+          <span className="text-white font-black text-sm leading-none">V</span>
         </div>
         <div>
           <span className="font-black text-[15px] text-[#1a1a2e] tracking-tight">Veyra</span>

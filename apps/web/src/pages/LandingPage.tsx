@@ -14,7 +14,7 @@ export function LandingPage() {
       <nav className="relative z-10 flex items-center justify-between px-8 py-5 border-b-2 border-white/20 backdrop-blur-md">
         <div className="flex items-center gap-2">
            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#f05060] to-[#e63946] shadow-[0_3px_0_#c1121f] flex items-center justify-center">
-             <span className="text-white font-black text-xs leading-none">SM</span>
+             <span className="text-white font-black text-xs leading-none">V</span>
            </div>
            <span className="text-xl font-black text-[#1a1a2e] tracking-tight">Veyra</span>
         </div>
