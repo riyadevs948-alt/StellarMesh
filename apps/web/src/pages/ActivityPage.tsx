@@ -69,8 +69,14 @@ export function ActivityPage() {
                       </a>
                     )}
                   </div>
-                  <p className="text-xs text-text-muted mt-0.5">
-                    {v.payer.slice(0, 8)}... → {v.payee.slice(0, 8)}...
+                  <p className="text-xs text-text-muted mt-0.5 flex items-center gap-1">
+                    <a href={`${explorerUrl}/account/${v.payer}`} target="_blank" rel="noreferrer" className="hover:text-accent-blue transition-colors" title="View Payer on Stellar Expert">
+                      {v.payer.slice(0, 8)}...
+                    </a>
+                    <span>→</span>
+                    <a href={`${explorerUrl}/account/${v.payee}`} target="_blank" rel="noreferrer" className="hover:text-accent-blue transition-colors" title="View Payee on Stellar Expert">
+                      {v.payee.slice(0, 8)}...
+                    </a>
                   </p>
                 </div>
                 <span className="text-xs text-text-muted shrink-0">

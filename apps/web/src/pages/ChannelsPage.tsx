@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Zap, Activity, CheckCircle2 } from 'lucide-react';
+import { Zap, Activity, CheckCircle2, ExternalLink } from 'lucide-react';
 import { useAppStore } from '../store/app.store';
 import { ChannelStatusBadge, EmptyState } from '../components/ui';
 import { stroopsToXlm } from '@stellar-mesh/voucher-protocol';
@@ -8,6 +8,7 @@ import { formatDate } from '../lib/utils';
 export function ChannelsPage() {
   const navigate = useNavigate();
   const channels = useAppStore((s) => s.channels);
+  const explorerUrl = import.meta.env.VITE_EXPLORER_BASE_URL || 'https://stellar.expert/explorer/testnet';
 
   return (
     <div className="p-6 animate-fade-in">
@@ -38,10 +39,27 @@ export function ChannelsPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <p className="text-sm font-medium text-text-primary font-mono">
-                      {c.payer.slice(0, 8)}... → {c.payee.slice(0, 8)}...
+                    <p className="text-sm font-medium text-text-primary font-mono flex items-center gap-1">
+                      <a href={`${explorerUrl}/account/${c.payer}`} target="_blank" rel="noreferrer" className="hover:text-accent-blue transition-colors" title="View Payer on Stellar Expert">
+                        {c.payer.slice(0, 8)}...
+                      </a>
+                      <span>→</span>
+                      <a href={`${explorerUrl}/account/${c.payee}`} target="_blank" rel="noreferrer" className="hover:text-accent-blue transition-colors" title="View Payee on Stellar Expert">
+                        {c.payee.slice(0, 8)}...
+                      </a>
                     </p>
                     <ChannelStatusBadge status={c.status} />
+                    {(c.fundingTxHash || c.creationTxHash) && (
+                      <a 
+                        href={`${explorerUrl}/tx/${c.fundingTxHash || c.creationTxHash}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-text-muted hover:text-accent-blue transition-colors flex items-center gap-1 text-xs"
+                        title="View Transaction on Stellar Explorer"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    )}
                   </div>
                   <p className="text-xs text-text-muted">
                     Limit: {stroopsToXlm(c.limitAmount)} XLM · Expires: {formatDate(c.expiresAt)}
