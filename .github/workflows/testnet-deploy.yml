@@ -80,8 +80,8 @@ jobs:
       - name: Initialize MeshRegistry
         env:
           STELLAR_DEPLOYER_SECRET: ${{ secrets.STELLAR_DEPLOYER_SECRET }}
-          ADMIN_ADDRESS: ${{ secrets.ADMIN_ADDRESS }}
         run: |
+          ADMIN_ADDRESS=$(stellar keys address deployer)
           stellar contract invoke \
             --id ${{ steps.deploy-registry.outputs.contract_id }} \
             --source deployer \
@@ -94,8 +94,8 @@ jobs:
       - name: Initialize MeshChannel
         env:
           STELLAR_DEPLOYER_SECRET: ${{ secrets.STELLAR_DEPLOYER_SECRET }}
-          ADMIN_ADDRESS: ${{ secrets.ADMIN_ADDRESS }}
         run: |
+          ADMIN_ADDRESS=$(stellar keys address deployer)
           stellar contract invoke \
             --id ${{ steps.deploy-channel.outputs.contract_id }} \
             --source deployer \
