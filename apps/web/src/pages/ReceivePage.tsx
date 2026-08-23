@@ -172,6 +172,17 @@ export function ReceivePage() {
     }
 
     const channel = channels.find((c) => c.contractChannelId === voucher.channelId);
+    
+    // Check if user is scanning their own outgoing voucher
+    if (wallet?.address && voucher.payer === wallet.address) {
+      setIsValid(false);
+      setScannedVoucher(voucher);
+      setValidationErrors([
+        'This is your own outgoing payment voucher. You cannot receive a payment from yourself. Please send this link/QR code to the intended recipient.'
+      ]);
+      return;
+    }
+
     const result = validateVoucher(voucher, {
       expectedPayee: wallet?.address ?? voucher.payee,
       channelId: voucher.channelId,
@@ -182,7 +193,15 @@ export function ReceivePage() {
 
     setScannedVoucher(voucher);
     setIsValid(result.valid);
-    setValidationErrors(result.errors.map((e) => e.message));
+    
+    // Make wrong recipient error much clearer
+    const displayErrors = result.errors.map((e) => {
+      if (e.code === 'WRONG_RECIPIENT') {
+        return `This voucher is meant for ${voucher.payee.slice(0, 8)}... but your wallet is ${wallet?.address?.slice(0, 8)}...`;
+      }
+      return e.message;
+    });
+    setValidationErrors(displayErrors);
   }, [channels, wallet]);
 
   const handleManualPaste = () => {
