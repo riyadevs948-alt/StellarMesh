@@ -26,7 +26,7 @@ export function LandingPage() {
            <div className="w-8 h-8 rounded-lg overflow-hidden bg-white shadow-sm border border-white/20 flex items-center justify-center">
              <img src="/logo.jpg" alt="Veyra Logo" className="w-full h-full object-cover" />
            </div>
-           <span className="text-xl font-black text-[#1a1a2e] tracking-tight">Veyra</span>
+           <span className="text-xl font-black text-white tracking-tight drop-shadow-md">Veyra</span>
         </div>
         <button onClick={() => navigate('/dashboard')} className="btn-clay-white !px-6 !py-2.5">
           Launch App <ArrowRight className="w-4 h-4" />
@@ -35,17 +35,17 @@ export function LandingPage() {
 
       {/* Hero */}
       <section className="relative z-10 flex flex-col items-center justify-center text-center py-32 px-6">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 backdrop-blur-sm shadow-clay-sm border border-white/80 text-[#1a1a2e] text-xs font-bold mb-8 uppercase tracking-widest">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/90 backdrop-blur-sm shadow-clay-sm border border-white/80 text-[#1a1a2e] text-xs font-bold mb-8 uppercase tracking-widest">
           <span className="w-2 h-2 rounded-full bg-[#36d4a7] animate-pulse shadow-[0_0_8px_#36d4a7]" />
           Powered by Stellar Soroban
         </div>
         
-        <h1 className="text-7xl md:text-8xl font-black mb-6 leading-[1.1] tracking-tighter text-[#1a1a2e]">
+        <h1 className="text-7xl md:text-8xl font-black mb-6 leading-[1.1] tracking-tighter text-white drop-shadow-lg">
           PAY OFFLINE.<br />
-          <span className="text-gradient-red">SETTLE ON STELLAR.</span>
+          <span className="text-gradient-red drop-shadow-lg">SETTLE ON STELLAR.</span>
         </h1>
         
-        <p className="text-[#4a4a6a] font-medium text-xl md:text-2xl max-w-2xl mb-12">
+        <p className="text-white/90 font-medium text-xl md:text-2xl max-w-2xl mb-12 drop-shadow-md">
           Temporary connectivity shouldn't stop people from exchanging value. 
           Veyra brings offline payments to the Stellar network.
         </p>
@@ -86,11 +86,11 @@ export function LandingPage() {
                  <div className={`w-16 h-16 rounded-[20px] flex items-center justify-center mb-6 transform transition-transform group-hover:-translate-y-2 group-hover:scale-105 ${bgMap[color]}`}>
                    <Icon className="w-8 h-8" />
                  </div>
-                 <h3 className="font-black text-lg text-[#1a1a2e] mb-2 uppercase tracking-wide">
-                   <span className="text-[#8888a8] mr-2">0{index + 1}</span>
-                   {label}
-                 </h3>
-                 <p className="text-sm font-medium text-[#4a4a6a]">{desc}</p>
+                 <h3 className="font-black text-lg text-white mb-2 uppercase tracking-wide drop-shadow-md">
+                  <span className="text-white/60 mr-2">0{index + 1}</span>
+                  {label}
+                </h3>
+                <p className="text-sm font-medium text-white/80 drop-shadow-sm">{desc}</p>
                </div>
              );
           })}
