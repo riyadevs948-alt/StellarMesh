@@ -124,7 +124,12 @@ impl MeshChannel {
     // ----------------------------------------------------------
     // Initialize
     // ----------------------------------------------------------
-    pub fn initialize(env: Env, admin: Address, registry_id: Address) -> Result<(), ChannelError> {
+    pub fn initialize(
+        env: Env,
+        admin: Address,
+        registry_id: Address,
+        xlm_asset: Address,
+    ) -> Result<(), ChannelError> {
         if env.storage().instance().has(&DataKey::Initialized) {
             return Err(ChannelError::AlreadyInitialized);
         }
@@ -134,6 +139,7 @@ impl MeshChannel {
         env.storage()
             .instance()
             .set(&DataKey::RegistryId, &registry_id);
+        env.storage().instance().set(&DataKey::XlmAsset, &xlm_asset);
         env.storage().instance().set(&DataKey::Initialized, &true);
         env.storage().instance().set(&DataKey::ChannelCount, &0u32);
         env.storage()
@@ -272,7 +278,8 @@ impl MeshChannel {
             return Err(ChannelError::AmountExceedsLimit);
         }
 
-        let xlm = token::Client::new(&env, &env.current_contract_address());
+        let xlm_asset: Address = env.storage().instance().get(&DataKey::XlmAsset).unwrap();
+        let xlm = token::Client::new(&env, &xlm_asset);
         xlm.transfer(&payer, &env.current_contract_address(), &amount);
 
         channel.deposited_amount += amount;
@@ -581,7 +588,8 @@ impl MeshChannel {
         // In production, this calls the native XLM Stellar Asset Contract.
         // We use env.current_contract_address() as the "from" for the transfer.
         // This is permitted because the contract controls its own balance.
-        let xlm = token::Client::new(env, &env.current_contract_address());
+        let xlm_asset: Address = env.storage().instance().get(&DataKey::XlmAsset).unwrap();
+        let xlm = token::Client::new(env, &xlm_asset);
         xlm.transfer(&env.current_contract_address(), to, &amount);
         Ok(())
     }
