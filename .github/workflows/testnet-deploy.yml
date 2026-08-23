@@ -42,7 +42,7 @@ jobs:
         env:
           STELLAR_DEPLOYER_SECRET: ${{ secrets.STELLAR_DEPLOYER_SECRET }}
         run: |
-          stellar keys add deployer --secret-key "$STELLAR_DEPLOYER_SECRET"
+          echo "$STELLAR_DEPLOYER_SECRET" | stellar keys add deployer --secret-key
 
       - name: Build contracts
         run: |
