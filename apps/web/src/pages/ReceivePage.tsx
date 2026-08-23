@@ -1,10 +1,11 @@
 // ============================================================
 // Veyra — Receive / Scan Voucher Page
-// Matches reference: QR scanner, voucher validation display
+// Option 1: Auto-import from ?payload= deep link
+// Option 2: Poll Stellar Horizon for incoming channels
 // ============================================================
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { QrCode, CheckCircle2, XCircle, Save, AlertTriangle } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { QrCode, CheckCircle2, XCircle, Save, AlertTriangle, RefreshCw, Zap, ExternalLink } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
 import {
   decodeVoucherFromTransport, validateVoucher, stroopsToXlm,
@@ -16,8 +17,21 @@ import type { Voucher } from '@stellar-mesh/shared';
 import toast from 'react-hot-toast';
 import { formatDateFull } from '../lib/utils';
 
+const HORIZON_URL = import.meta.env.VITE_STELLAR_HORIZON_URL ?? 'https://horizon-testnet.stellar.org';
+const CHANNEL_CONTRACT = import.meta.env.VITE_MESH_CHANNEL_CONTRACT_ID ?? '';
+const EXPLORER_BASE = import.meta.env.VITE_EXPLORER_BASE_URL ?? 'https://stellar.expert/explorer/testnet';
+
+interface IncomingChannel {
+  payer: string;
+  channelId: string;
+  txHash: string;
+  createdAt: string;
+  limitAmount: string;
+}
+
 export function ReceivePage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const wallet = useWallet();
   const upsertVoucher = useAppStore((s) => s.upsertVoucher);
   const channels = useAppStore((s) => s.channels);
@@ -31,9 +45,87 @@ export function ReceivePage() {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Option 1: Deep link auto-import state
+  const [deepLinkProcessed, setDeepLinkProcessed] = useState(false);
+
+  // Option 2: Stellar polling state
+  const [incomingChannels, setIncomingChannels] = useState<IncomingChannel[]>([]);
+  const [polling, setPolling] = useState(false);
+  const [lastPolled, setLastPolled] = useState<string | null>(null);
+
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const divId = 'qr-scanner-div';
 
+  // ─── OPTION 1: Auto-import from ?payload= deep link ───────────────────────
+  useEffect(() => {
+    const payloadParam = searchParams.get('payload');
+    if (payloadParam && !deepLinkProcessed) {
+      setDeepLinkProcessed(true);
+      const decoded = decodeURIComponent(payloadParam);
+      toast.success('Payment link detected! Importing voucher...');
+      handleDecode(decoded);
+    }
+  }, [searchParams]);
+
+  // ─── OPTION 2: Poll Stellar Horizon for channels where user is payee ───────
+  const pollIncomingChannels = useCallback(async () => {
+    if (!wallet?.address || !CHANNEL_CONTRACT) return;
+    setPolling(true);
+    try {
+      // Query Horizon for operations on the MeshChannel contract that involve our address
+      const url = `${HORIZON_URL}/accounts/${wallet.address}/operations?limit=50&order=desc&include_failed=false`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Horizon fetch failed');
+      const data = await res.json();
+
+      // Also query the contract operations to find create_channel calls where payee = our address
+      const contractOpsUrl = `${HORIZON_URL}/accounts/${CHANNEL_CONTRACT}/operations?limit=100&order=desc&include_failed=false`;
+      const contractRes = await fetch(contractOpsUrl);
+      const contractData = contractRes.ok ? await contractRes.json() : { _embedded: { records: [] } };
+
+      // Parse contract operations to find channels where we are the payee
+      const found: IncomingChannel[] = [];
+      const records: any[] = contractData._embedded?.records ?? [];
+
+      for (const op of records) {
+        if (op.type === 'invoke_host_function') {
+          // Look for create_channel invocations where the payee matches our address
+          const fnArgs: string = JSON.stringify(op.parameters ?? op.function ?? '');
+          if (fnArgs.includes(wallet.address) && op.source_account !== wallet.address) {
+            // This is a channel created BY someone else where our address appears (likely as payee)
+            const existing = channels.find(
+              (c) => c.payer === op.source_account
+            );
+            if (!existing) {
+              found.push({
+                payer: op.source_account,
+                channelId: op.id,
+                txHash: op.transaction_hash,
+                createdAt: op.created_at,
+                limitAmount: '0',
+              });
+            }
+          }
+        }
+      }
+
+      setIncomingChannels(found);
+      setLastPolled(new Date().toLocaleTimeString());
+    } catch (e) {
+      // Silently fail - polling is best-effort
+    } finally {
+      setPolling(false);
+    }
+  }, [wallet?.address, channels]);
+
+  // Auto-poll on mount and every 30 seconds
+  useEffect(() => {
+    void pollIncomingChannels();
+    const interval = setInterval(() => void pollIncomingChannels(), 30_000);
+    return () => clearInterval(interval);
+  }, [pollIncomingChannels]);
+
+  // ─── Scanner helpers ───────────────────────────────────────────────────────
   const startScanner = useCallback(async () => {
     setError(null);
     try {
@@ -79,7 +171,6 @@ export function ReceivePage() {
       return;
     }
 
-    // Validate
     const channel = channels.find((c) => c.contractChannelId === voucher.channelId);
     const result = validateVoucher(voucher, {
       expectedPayee: wallet?.address ?? voucher.payee,
@@ -125,9 +216,83 @@ export function ReceivePage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-text-primary">Scan Veyra Voucher</h1>
         <p className="text-text-muted text-sm mt-1">
-          Scan a QR code or paste a voucher payload to receive a payment.
+          Scan a QR code, paste a voucher payload, or click a shared payment link to receive a payment.
         </p>
       </div>
+
+      {/* ── OPTION 2: Incoming Channels from Stellar Network ── */}
+      {wallet && (
+        <div className="card mb-5">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-accent-yellow" />
+              <h3 className="text-sm font-semibold text-text-secondary">Incoming Payment Channels</h3>
+              <span className="text-[10px] text-text-muted bg-surface-elevated px-2 py-0.5 rounded-full">
+                Auto-refreshes every 30s
+              </span>
+            </div>
+            <button
+              onClick={() => void pollIncomingChannels()}
+              disabled={polling}
+              className="btn-secondary text-xs px-3 py-1.5 flex items-center gap-1.5"
+              title="Refresh incoming channels from Stellar"
+            >
+              <RefreshCw className={`w-3 h-3 ${polling ? 'animate-spin' : ''}`} />
+              {polling ? 'Checking...' : 'Refresh'}
+            </button>
+          </div>
+
+          {lastPolled && (
+            <p className="text-[10px] text-text-muted mb-2">Last checked: {lastPolled}</p>
+          )}
+
+          {incomingChannels.length > 0 ? (
+            <div className="space-y-2">
+              {incomingChannels.map((ch) => (
+                <div key={ch.channelId} className="flex items-center justify-between p-3 bg-accent-green/5 border border-accent-green/20 rounded-xl">
+                  <div>
+                    <p className="text-xs font-semibold text-text-primary">
+                      💸 Channel from <span className="font-mono">{ch.payer.slice(0, 8)}...</span>
+                    </p>
+                    <p className="text-[10px] text-text-muted mt-0.5">
+                      Created {new Date(ch.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                  <a
+                    href={`${EXPLORER_BASE}/tx/${ch.txHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-secondary text-xs px-2 py-1 flex items-center gap-1"
+                  >
+                    <ExternalLink className="w-3 h-3" /> View
+                  </a>
+                </div>
+              ))}
+              <p className="text-xs text-text-muted mt-2 text-center">
+                Ask the sender to share a voucher QR or payment link with you to receive funds.
+              </p>
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <p className="text-xs text-text-muted">
+                {polling
+                  ? 'Checking Stellar network...'
+                  : 'No new incoming channels detected on the Stellar network.'}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── OPTION 1: Deep link banner ── */}
+      {deepLinkProcessed && (
+        <div className="mb-4 flex items-center gap-2 p-3 bg-accent-blue/10 border border-accent-blue/20 rounded-xl">
+          <CheckCircle2 className="w-4 h-4 text-accent-blue shrink-0" />
+          <p className="text-xs text-text-secondary">
+            Payment link detected — voucher imported automatically below.
+          </p>
+        </div>
+      )}
 
       {/* Scanner area */}
       <div className="card mb-5">

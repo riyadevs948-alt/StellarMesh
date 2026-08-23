@@ -4,7 +4,7 @@
 // ============================================================
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, QrCode, Copy, Share2, AlertTriangle, Download } from 'lucide-react';
+import { Lock, QrCode, Copy, Share2, AlertTriangle, Download, Link } from 'lucide-react';
 import QRCode from 'qrcode';
 import { useAppStore, useIsOffline, useWallet, useChannels } from '../store/app.store';
 import { VoucherRepo } from '../lib/db';
@@ -161,6 +161,44 @@ export function PayPage() {
       document.body.removeChild(a);
       toast.success('QR Code downloaded');
     }
+  };
+
+  const getDeepLink = () => {
+    if (!encodedPayload) return '';
+    const base = window.location.origin;
+    return `${base}/receive?payload=${encodeURIComponent(encodedPayload)}`;
+  };
+
+  const handleCopyLink = () => {
+    const link = getDeepLink();
+    navigator.clipboard.writeText(link);
+    toast.success('Payment link copied! Send it to the recipient.');
+  };
+
+  const handleShareWhatsApp = () => {
+    if (!encodedPayload || !generatedVoucher) return;
+    const xlm = stroopsToXlm(generatedVoucher.amount);
+    const link = getDeepLink();
+    const msg = encodeURIComponent(
+      `💸 You have a Veyra payment incoming!\n\n` +
+      `Amount: ${xlm} XLM\n` +
+      `From: ${generatedVoucher.payer.slice(0, 8)}...\n` +
+      `${generatedVoucher.reference ? `Memo: ${generatedVoucher.reference}\n` : ''}` +
+      `\n👉 Click to receive:\n${link}`
+    );
+    window.open(`https://wa.me/?text=${msg}`, '_blank');
+  };
+
+  const handleShareTelegram = () => {
+    if (!encodedPayload || !generatedVoucher) return;
+    const xlm = stroopsToXlm(generatedVoucher.amount);
+    const link = getDeepLink();
+    const text = encodeURIComponent(
+      `💸 Veyra Payment: ${xlm} XLM\n` +
+      `${generatedVoucher.reference ? `Memo: ${generatedVoucher.reference}\n` : ''}` +
+      `Click to receive 👇`
+    );
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${text}`, '_blank');
   };
 
   if (!wallet) {
@@ -322,19 +360,43 @@ export function PayPage() {
                 </div>
               </div>
 
-              <div className="flex gap-2 mt-4 w-full">
-                <button onClick={handleCopy} className="btn-secondary flex-1 text-xs px-2">
-                  <Copy className="w-3.5 h-3.5" /> Copy
-                </button>
-                <button onClick={handleDownloadQR} className="btn-secondary flex-1 text-xs px-2">
-                  <Download className="w-3.5 h-3.5" /> Save QR
-                </button>
-                <button
-                  onClick={() => navigator.share?.({ text: encodedPayload ?? '' })}
-                  className="btn-secondary flex-1 text-xs px-2"
-                >
-                  <Share2 className="w-3.5 h-3.5" /> Share
-                </button>
+              <div className="w-full mt-4 space-y-2">
+                {/* Row 1: copy payload + download QR */}
+                <div className="flex gap-2">
+                  <button onClick={handleCopy} className="btn-secondary flex-1 text-xs px-2">
+                    <Copy className="w-3.5 h-3.5" /> Copy Payload
+                  </button>
+                  <button onClick={handleDownloadQR} className="btn-secondary flex-1 text-xs px-2">
+                    <Download className="w-3.5 h-3.5" /> Save QR
+                  </button>
+                </div>
+                {/* Row 2: share deep link */}
+                <div className="pt-2 border-t border-border-subtle">
+                  <p className="text-[10px] text-text-muted mb-2 text-center">📤 Send payment link to recipient</p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleCopyLink}
+                      className="btn-secondary flex-1 text-xs px-2"
+                      title="Copy a link the payee can click to auto-import this voucher"
+                    >
+                      <Link className="w-3.5 h-3.5" /> Copy Link
+                    </button>
+                    <button
+                      onClick={handleShareWhatsApp}
+                      className="btn-secondary flex-1 text-xs px-2 text-green-600 hover:bg-green-50"
+                      title="Share via WhatsApp"
+                    >
+                      <Share2 className="w-3.5 h-3.5" /> WhatsApp
+                    </button>
+                    <button
+                      onClick={handleShareTelegram}
+                      className="btn-secondary flex-1 text-xs px-2 text-blue-500 hover:bg-blue-50"
+                      title="Share via Telegram"
+                    >
+                      <Share2 className="w-3.5 h-3.5" /> Telegram
+                    </button>
+                  </div>
+                </div>
               </div>
             </>
           ) : (
