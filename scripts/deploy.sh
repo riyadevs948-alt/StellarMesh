@@ -58,4 +58,10 @@ VITE_MESH_REGISTRY_CONTRACT_ID=$REGISTRY_ID
 VITE_MESH_CHANNEL_CONTRACT_ID=$CHANNEL_ID
 EOF
 
+if [ -n "$GITHUB_ENV" ]; then
+    echo "VITE_MESH_REGISTRY_CONTRACT_ID=$REGISTRY_ID" >> $GITHUB_ENV
+    echo "VITE_MESH_CHANNEL_CONTRACT_ID=$CHANNEL_ID" >> $GITHUB_ENV
+    echo "Wrote contract IDs to GITHUB_ENV"
+fi
+
 echo "Deployment complete! Contract IDs saved to apps/web/.env.production"
