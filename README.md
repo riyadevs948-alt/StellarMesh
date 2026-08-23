@@ -879,6 +879,7 @@ VITE_MESH_CHANNEL_CONTRACT_ID=CB5WR2HOFDCCFVN5CRG47XBBDLXWXKEKDGRWTJIGINQS6YGNZL
 <br/>
 
 ![Test Pass](./test%20pass/image.png)
+![CI/CD Pipeline](./apps/web/cicd%20proof/image.png)
 
 </details>
 
