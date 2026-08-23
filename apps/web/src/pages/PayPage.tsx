@@ -4,7 +4,7 @@
 // ============================================================
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, QrCode, Copy, Share2, AlertTriangle } from 'lucide-react';
+import { Lock, QrCode, Copy, Share2, AlertTriangle, Download } from 'lucide-react';
 import QRCode from 'qrcode';
 import { useAppStore, useIsOffline, useWallet, useChannels } from '../store/app.store';
 import { VoucherRepo } from '../lib/db';
@@ -148,6 +148,18 @@ export function PayPage() {
     if (encodedPayload) {
       navigator.clipboard.writeText(encodedPayload);
       toast.success('Payload copied to clipboard');
+    }
+  };
+
+  const handleDownloadQR = () => {
+    if (qrDataUrl) {
+      const a = document.createElement('a');
+      a.href = qrDataUrl;
+      a.download = `voucher-${generatedVoucher?.sequence?.toString(16) || 'qr'}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      toast.success('QR Code downloaded');
     }
   };
 
@@ -311,12 +323,15 @@ export function PayPage() {
               </div>
 
               <div className="flex gap-2 mt-4 w-full">
-                <button onClick={handleCopy} className="btn-secondary flex-1 text-xs">
-                  <Copy className="w-3.5 h-3.5" /> Copy Payload
+                <button onClick={handleCopy} className="btn-secondary flex-1 text-xs px-2">
+                  <Copy className="w-3.5 h-3.5" /> Copy
+                </button>
+                <button onClick={handleDownloadQR} className="btn-secondary flex-1 text-xs px-2">
+                  <Download className="w-3.5 h-3.5" /> Save QR
                 </button>
                 <button
                   onClick={() => navigator.share?.({ text: encodedPayload ?? '' })}
-                  className="btn-secondary flex-1 text-xs"
+                  className="btn-secondary flex-1 text-xs px-2"
                 >
                   <Share2 className="w-3.5 h-3.5" /> Share
                 </button>
