@@ -109,9 +109,12 @@ async function settleVoucher(
       return;
     }
 
-    if (signerAddress !== voucher.payer) {
-      await updateAttempt('FAILED', 'Signer is not the payer');
-      toast.error('Cannot settle: signer mismatch', { id: voucher.voucherId });
+    // The contract requires the PAYEE to be the settler.
+    // If the current wallet is the payer (not the payee), we cannot auto-settle.
+    // Only the payee can call settle_voucher on the contract.
+    if (signerAddress !== voucher.payee && signerAddress !== voucher.payer) {
+      await updateAttempt('FAILED', 'Wallet is neither payer nor payee');
+      toast.error('Cannot settle: wallet not associated with this voucher', { id: voucher.voucherId });
       await VoucherRepo.updateStatus(voucher.voucherId, 'FAILED');
       store.upsertVoucher({ ...voucher, localStatus: 'FAILED' });
       return;
@@ -135,18 +138,28 @@ async function settleVoucher(
 
     const signatureBuffer = Buffer.from(voucher.authorization!.signature, 'hex');
 
+    // channelId stored in the voucher is a hex string — convert to raw bytes for the contract
+    const channelIdHex = voucher.channelId.replace(/[^0-9a-fA-F]/g, '');
+    const channelIdBytes = Buffer.from(channelIdHex.length === 64 ? channelIdHex : voucher.channelId, 'hex');
+
+    // signed_payload is the hex-encoded canonical JSON — pass raw bytes
+    const signedPayloadBytes = Buffer.from(voucher.authorization!.signedPayloadHex, 'hex');
+
+    // voucher_id is a hex hash — pass as raw bytes
+    const voucherIdBytes = Buffer.from(voucher.voucherId.replace(/[^0-9a-fA-F]/g, ''), 'hex');
+
     // Build the Soroban transaction
     const tx = await client.settle_voucher({
       settler: signerAddress,
       voucher: {
-        channel_id: Buffer.from(voucher.channelId, 'hex'),
+        channel_id: channelIdBytes,
         payer: voucher.payer,
         payee: voucher.payee,
         amount: BigInt(voucher.amount),
         sequence: BigInt(voucher.sequence),
         expires_at: BigInt(Math.floor(new Date(voucher.expiresAt).getTime() / 1000)),
-        voucher_id: Buffer.from(voucher.voucherId, 'hex'),
-        signed_payload: Buffer.from(voucher.authorization!.signedPayloadHex, 'hex'),
+        voucher_id: voucherIdBytes,
+        signed_payload: signedPayloadBytes,
         signature: signatureBuffer,
       }
     });
@@ -183,18 +196,38 @@ async function settleVoucher(
       { id: voucher.voucherId, duration: 8000 }
     );
   } catch (e) {
-    const errorMessage = e instanceof Error ? e.message : String(e);
+    const rawMsg = e instanceof Error ? e.message : String(e);
+    // Extract meaningful Soroban error code if present (e.g. "Error(Contract, #15)" = VoucherInvalidSignature)
+    const contractErrorMap: Record<string, string> = {
+      '#3': 'Unauthorized (wallet is not the payee)',
+      '#4': 'Channel not found on chain',
+      '#6': 'Channel is not active',
+      '#7': 'Channel has expired',
+      '#8': 'Insufficient channel balance',
+      '#9': 'Voucher has expired',
+      '#10': 'Voucher already settled',
+      '#12': 'Wrong recipient address',
+      '#13': 'Voucher/channel mismatch',
+      '#14': 'Sequence number already used',
+      '#15': 'Invalid signature — session key mismatch',
+      '#20': 'Amount exceeds channel limit',
+    };
+    let errorMessage = rawMsg;
+    for (const [code, label] of Object.entries(contractErrorMap)) {
+      if (rawMsg.includes(code)) { errorMessage = label; break; }
+    }
     console.error(`[SettlementEngine] Failed to settle voucher ${voucher.voucherId}:`, e);
 
-    // Determine if retryable
-    const permanent = errorMessage.includes('WRONG_') || errorMessage.includes('expired');
+    const permanent = rawMsg.includes('WRONG_') || rawMsg.includes('expired') ||
+      rawMsg.includes('#9') || rawMsg.includes('#10') || rawMsg.includes('#12') ||
+      rawMsg.includes('#13') || rawMsg.includes('#14') || rawMsg.includes('#15');
     await updateAttempt(permanent ? 'PERMANENTLY_FAILED' : 'FAILED', errorMessage);
 
     await VoucherRepo.updateStatus(voucher.voucherId, 'FAILED');
     store.upsertVoucher({ ...voucher, localStatus: 'FAILED' });
 
     toast.error(
-      `Settlement failed: ${errorMessage.slice(0, 60)}`,
+      `Settlement failed: ${errorMessage.slice(0, 80)}`,
       { id: voucher.voucherId }
     );
   }
