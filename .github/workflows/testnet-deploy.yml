@@ -162,5 +162,7 @@ jobs:
             echo "Vercel token is not set, skipping deployment."
             exit 0
           fi
+          # Trim newlines from the token just in case
+          CLEAN_TOKEN=$(echo -n "$VERCEL_TOKEN" | tr -d '\n\r')
           npm install -g vercel
-          vercel --prod --token "$VERCEL_TOKEN"
+          vercel --prod --token "$CLEAN_TOKEN"
