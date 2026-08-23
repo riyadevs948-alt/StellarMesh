@@ -29,8 +29,11 @@ jobs:
             ~/.cargo/git
           key: ${{ runner.os }}-cargo-deploy
 
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@main
+
       - name: Install Stellar CLI
-        run: cargo install --locked stellar-cli
+        run: cargo binstall -y stellar-cli
 
       - name: Setup Stellar identity
         env:
