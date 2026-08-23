@@ -77,9 +77,9 @@ Unlike simple payment apps that fail when you go offline, Veyra is a **complete 
 
 Veyra is fully responsive and optimized for mobile devices. Every screen adapts seamlessly from desktop to mobile, ensuring a premium experience on any device.
 
-| Mobile Landing | Mobile Dashboard | Mobile Channels |
-|:---:|:---:|:---:|
-| ![Mobile Landing](assets/mobile/mobile_landing.png) | ![Mobile Dashboard](assets/mobile/mobile_dashboard.png) | ![Mobile Channels](assets/mobile/mobile_channels.png) |
+| Mobile Dashboard | Mobile Channels |
+|:---:|:---:|
+| ![Mobile Dashboard](assets/mobile/mobile_dashboard.png) | ![Mobile Channels](assets/mobile/mobile_channels.png) |
 
 | Mobile Offline Payment | Mobile Activity |
 |:---:|:---:|
