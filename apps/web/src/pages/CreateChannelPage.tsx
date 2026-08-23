@@ -130,7 +130,7 @@ export function CreateChannelPage() {
       toast.loading('Please sign in Freighter to create channel...', { id: 'channel-create' });
       
       const { result, sendTransactionResponse } = await tx.signAndSend({
-        signTransaction: async (txXDR) => {
+        signTransaction: async (txXDR: string) => {
           const signed = await signTransactionWithFreighter(txXDR, wallet.address, NETWORK_PASSPHRASE);
           return { signedTxXdr: signed, signerAddress: wallet.address };
         }
@@ -185,7 +185,7 @@ export function CreateChannelPage() {
       });
       
       const { sendTransactionResponse: fundRes } = await fundTx.signAndSend({
-        signTransaction: async (txXDR) => {
+        signTransaction: async (txXDR: string) => {
           const signed = await signTransactionWithFreighter(txXDR, wallet.address, NETWORK_PASSPHRASE);
           return { signedTxXdr: signed, signerAddress: wallet.address };
         }
