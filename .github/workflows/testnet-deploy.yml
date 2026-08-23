@@ -162,6 +162,12 @@ jobs:
             echo "Vercel token is not set, skipping deployment."
             exit 0
           fi
+          if [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "VERCEL_ORG_ID or VERCEL_PROJECT_ID is missing."
+            echo "Please link your project locally or create one on Vercel to get these IDs."
+            echo "Skipping Vercel deployment for now so the pipeline can succeed."
+            exit 0
+          fi
           # Trim newlines from the token just in case
           CLEAN_TOKEN=$(echo -n "$VERCEL_TOKEN" | tr -d '\n\r')
           npm install -g vercel
