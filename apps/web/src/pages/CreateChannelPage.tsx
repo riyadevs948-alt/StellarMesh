@@ -107,7 +107,7 @@ export function CreateChannelPage() {
       
       const client = new MeshChannelClient({
         networkPassphrase: NETWORK_PASSPHRASE,
-        contractId: 'CDVS3REFK2CSYZISGDOJTVWZ2RDTUIKUPKXZWKZ34PDJ7GMKCFWWJWSA',
+        contractId: import.meta.env.VITE_MESH_CHANNEL_CONTRACT_ID,
         rpcUrl: 'https://soroban-testnet.stellar.org',
         publicKey: wallet.address,
       });
