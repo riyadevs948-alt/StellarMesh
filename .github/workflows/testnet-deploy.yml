@@ -165,4 +165,4 @@ jobs:
           # Trim newlines from the token just in case
           CLEAN_TOKEN=$(echo -n "$VERCEL_TOKEN" | tr -d '\n\r')
           npm install -g vercel
-          vercel --prod --token "$CLEAN_TOKEN"
+          vercel --prod --yes --token "$CLEAN_TOKEN"
