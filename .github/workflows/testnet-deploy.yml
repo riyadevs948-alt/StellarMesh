@@ -40,9 +40,9 @@ jobs:
 
       - name: Setup Stellar identity
         env:
-          STELLAR_SECRET_KEY: ${{ secrets.STELLAR_SECRET_KEY }}
+          STELLAR_DEPLOYER_SECRET: ${{ secrets.STELLAR_DEPLOYER_SECRET }}
         run: |
-          stellar keys add deployer --secret-key "$STELLAR_SECRET_KEY"
+          stellar keys add deployer --secret-key "$STELLAR_DEPLOYER_SECRET"
 
       - name: Build contracts
         run: |
@@ -52,7 +52,7 @@ jobs:
       - name: Deploy MeshRegistry
         id: deploy-registry
         env:
-          STELLAR_SECRET_KEY: ${{ secrets.STELLAR_SECRET_KEY }}
+          STELLAR_DEPLOYER_SECRET: ${{ secrets.STELLAR_DEPLOYER_SECRET }}
         run: |
           CONTRACT_ID=$(stellar contract deploy \
             --wasm contracts/mesh-registry/target/wasm32-unknown-unknown/release/mesh_registry.wasm \
@@ -66,7 +66,7 @@ jobs:
       - name: Deploy MeshChannel
         id: deploy-channel
         env:
-          STELLAR_SECRET_KEY: ${{ secrets.STELLAR_SECRET_KEY }}
+          STELLAR_DEPLOYER_SECRET: ${{ secrets.STELLAR_DEPLOYER_SECRET }}
         run: |
           CONTRACT_ID=$(stellar contract deploy \
             --wasm contracts/mesh-channel/target/wasm32-unknown-unknown/release/mesh_channel.wasm \
@@ -79,7 +79,7 @@ jobs:
 
       - name: Initialize MeshRegistry
         env:
-          STELLAR_SECRET_KEY: ${{ secrets.STELLAR_SECRET_KEY }}
+          STELLAR_DEPLOYER_SECRET: ${{ secrets.STELLAR_DEPLOYER_SECRET }}
           ADMIN_ADDRESS: ${{ secrets.ADMIN_ADDRESS }}
         run: |
           stellar contract invoke \
@@ -93,7 +93,7 @@ jobs:
 
       - name: Initialize MeshChannel
         env:
-          STELLAR_SECRET_KEY: ${{ secrets.STELLAR_SECRET_KEY }}
+          STELLAR_DEPLOYER_SECRET: ${{ secrets.STELLAR_DEPLOYER_SECRET }}
           ADMIN_ADDRESS: ${{ secrets.ADMIN_ADDRESS }}
         run: |
           stellar contract invoke \
