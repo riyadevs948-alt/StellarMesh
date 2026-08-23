@@ -43,8 +43,12 @@ echo "Deploying MeshChannel..."
 CHANNEL_ID=$(stellar contract deploy --wasm $CHANNEL_WASM --source $STELLAR_ACCOUNT --network testnet)
 echo "Channel ID: $CHANNEL_ID"
 
-echo "Initializing MeshChannel..."
 ADMIN_ADDRESS=$(stellar keys address deployer)
+
+echo "Initializing MeshRegistry..."
+stellar contract invoke --id $REGISTRY_ID --source $STELLAR_ACCOUNT --network testnet -- initialize --admin $ADMIN_ADDRESS
+
+echo "Initializing MeshChannel..."
 stellar contract invoke --id $CHANNEL_ID --source $STELLAR_ACCOUNT --network testnet -- initialize --admin $ADMIN_ADDRESS --registry-id $REGISTRY_ID --xlm-asset CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC
 
 echo "Writing environment variables..."
