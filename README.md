@@ -8,6 +8,12 @@
 <p>🌐 <strong>Live Application: <a href="https://veyra-git-main-riya-8244.vercel.app/">https://veyra-git-main-riya-8244.vercel.app/</a></strong></p>
 
 <p>
+  <a href="https://drive.google.com/file/d/14xNo3Hgim6-jTYh7cGTRtieo-Wdv_iNU/view?usp=drivesdk">
+    <img src="https://img.shields.io/badge/Demo_Video-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="Demo Video" />
+  </a>
+</p>
+
+<p>
   <img src="https://img.shields.io/badge/Rust-black?style=for-the-badge&logo=rust&logoColor=white" />
   <img src="https://img.shields.io/badge/Stellar-E84142?style=for-the-badge&logo=stellar&logoColor=white" />
   <img src="https://img.shields.io/badge/Soroban-3178C6?style=for-the-badge&logo=web3.js&logoColor=white" />
