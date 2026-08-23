@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ Veyra — StellarMesh
+# ⚡ Veyra
 ### **Global Decentralized Offline Payment Network**
 
 > *Eliminating connectivity barriers through cryptographic vouchers, QR-based exchange, and Stellar Soroban settlement — pay offline, settle on-chain*
@@ -53,7 +53,84 @@ Unlike simple payment apps that fail when you go offline, Veyra is a **complete 
 
 ---
 
-<a name="problem-statement"></a>
+## 📸 Platform UI Tour
+
+| Landing Page | Dashboard |
+|:---:|:---:|
+| ![Landing Page](assets/screenshots/landing_page.png) | ![Dashboard](assets/screenshots/dashboard.png) |
+
+| Wallet | Payment Channels |
+|:---:|:---:|
+| ![Wallet](assets/screenshots/wallet.png) | ![Channels](assets/screenshots/channels.png) |
+
+| Offline Payment + QR Voucher | Receive & Scan Voucher |
+|:---:|:---:|
+| ![Offline Payment](assets/screenshots/payments_qr.png) | ![Receive Scan](assets/screenshots/receive_scan.png) |
+
+| Activity Feed with Explorer Links | |
+|:---:|:---:|
+| ![Activity](assets/screenshots/activity.png) | |
+
+---
+
+## 📱 Mobile Responsive Design
+
+Veyra is fully responsive and optimized for mobile devices. Every screen adapts seamlessly from desktop to mobile, ensuring a premium experience on any device.
+
+| Mobile Landing | Mobile Dashboard | Mobile Channels |
+|:---:|:---:|:---:|
+| ![Mobile Landing](assets/mobile/mobile_landing.png) | ![Mobile Dashboard](assets/mobile/mobile_dashboard.png) | ![Mobile Channels](assets/mobile/mobile_channels.png) |
+
+| Mobile Offline Payment | Mobile Activity |
+|:---:|:---:|
+| ![Mobile Payment](assets/mobile/mobile_payment.png) | ![Mobile Activity](assets/mobile/mobile_activity.png) |
+
+> ✅ Tested on Chrome mobile viewport, iOS Safari, and Android Chrome. All layouts stack gracefully with full touch support.
+
+---
+
+## 🔗 Blockchain Proof — Live on Stellar Testnet
+
+### Smart Contract Dashboard (Stellar Expert)
+
+**MeshRegistry Contract** — `CCD6EYTGXBIY3ZCLSRNVOUSR2V7JOLHMCAB7FMQWJD7DD4AAAJJFOCNP`
+
+![MeshRegistry Contract on Stellar Expert](assets/proof/contract_registry.png)
+
+**MeshChannel Contract** — `CB5WR2HOFDCCFVN5CRG47XBBDLXWXKEKDGRWTJIGINQS6YGNZLNIEOCA`
+> Contains **50 XLM** locked balance from a real funded channel — proof of live on-chain state
+
+![MeshChannel Contract on Stellar Expert](assets/proof/contract_channel.png)
+
+### Proof of Live Transactions
+
+**`create_channel` Transaction** — Channel created and funded via MeshChannel contract
+
+![Create Channel Transaction](assets/proof/tx_create_channel.png)
+
+**`fund_channel` Transaction** — Full on-chain history of all `create_channel` + `fund_channel` calls
+
+![Fund Channel Transaction History](assets/proof/tx_fund_channel.png)
+
+### Key Transaction Details
+
+| Field | Value |
+|:---|:---|
+| **MeshChannel Contract** | `CB5WR2HOFDCCFVN5CRG47XBBDLXWXKEKDGRWTJIGINQS6YGNZLNIEOCA` |
+| **MeshRegistry Contract** | `CCD6EYTGXBIY3ZCLSRNVOUSR2V7JOLHMCAB7FMQWJD7DD4AAAJJFOCNP` |
+| **Operation: create_channel** | Invoked `2026-08-23 16:13:11 UTC` — Ledger #4295742 |
+| **Operation: fund_channel** | Invoked `2026-08-23 16:13:16 UTC` — `50 XLM` deposited |
+| **Fee Charged** | `0.0117638 XLM` (~$0.001) |
+| **Status** | ✅ Successful |
+| **Network** | Stellar Testnet |
+
+🔗 [View MeshRegistry on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CCD6EYTGXBIY3ZCLSRNVOUSR2V7JOLHMCAB7FMQWJD7DD4AAAJJFOCNP)  
+🔗 [View MeshChannel on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CB5WR2HOFDCCFVN5CRG47XBBDLXWXKEKDGRWTJIGINQS6YGNZLNIEOCA)  
+🔗 [View create_channel TX](https://stellar.expert/explorer/testnet/tx/3492bea591a47ef8bf148ca8321031c60de7f028729cb727669ba103b4fcd36d)
+
+---
+
+
 ## 🔴 Problem Statement
 
 The global payments system has a fatal flaw: **it requires constant internet connectivity**. For billions of people, this is not a luxury — it's an everyday barrier.
