@@ -45,7 +45,7 @@ echo "Channel ID: $CHANNEL_ID"
 
 echo "Initializing MeshChannel..."
 ADMIN_ADDRESS=$(stellar keys address deployer)
-stellar contract invoke --id $CHANNEL_ID --source $STELLAR_ACCOUNT --network testnet -- initialize --admin $ADMIN_ADDRESS --registry_id $REGISTRY_ID
+stellar contract invoke --id $CHANNEL_ID --source $STELLAR_ACCOUNT --network testnet -- initialize --admin $ADMIN_ADDRESS --registry-id $REGISTRY_ID --xlm-asset CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC
 
 echo "Writing environment variables..."
 cat << EOF > apps/web/.env.production
