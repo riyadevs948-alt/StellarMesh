@@ -827,6 +827,63 @@ VITE_MESH_CHANNEL_CONTRACT_ID=CB5WR2HOFDCCFVN5CRG47XBBDLXWXKEKDGRWTJIGINQS6YGNZL
 
 ---
 
+## 📸 Appendix: Project Screenshots & Proof of Work
+
+<details>
+<summary><b>1. Frontend Application Screenshots</b></summary>
+<br/>
+
+![Frontend 1](./Frontend%20screenshot/Screenshot%202026-08-23%20214957.png)
+![Frontend 2](./Frontend%20screenshot/Screenshot%202026-08-23%20215009.png)
+![Frontend 3](./Frontend%20screenshot/Screenshot%202026-08-23%20215022.png)
+![Frontend 4](./Frontend%20screenshot/Screenshot%202026-08-23%20215030.png)
+![Frontend 5](./Frontend%20screenshot/Screenshot%202026-08-23%20215106.png)
+![Frontend 6](./Frontend%20screenshot/Screenshot%202026-08-23%20215128.png)
+![Frontend 7](./Frontend%20screenshot/Screenshot%202026-08-23%20215139.png)
+
+</details>
+
+<details>
+<summary><b>2. Mobile Responsive Proof</b></summary>
+<br/>
+
+<div style="display: flex; gap: 10px; flex-wrap: wrap;">
+  <img src="./Mobile%20Responsive%20proof/Screenshot%202026-08-23%20215312.png" width="300" alt="Mobile 1" />
+  <img src="./Mobile%20Responsive%20proof/Screenshot%202026-08-23%20215326.png" width="300" alt="Mobile 2" />
+  <img src="./Mobile%20Responsive%20proof/Screenshot%202026-08-23%20215335.png" width="300" alt="Mobile 3" />
+  <img src="./Mobile%20Responsive%20proof/Screenshot%202026-08-23%20215345.png" width="300" alt="Mobile 4" />
+</div>
+
+</details>
+
+<details>
+<summary><b>3. Smart Contract Deployment & Verification</b></summary>
+<br/>
+
+![Smart Contract 1](./Smart%20contract%20proof/Screenshot%202026-08-23%20214752.png)
+![Smart Contract 2](./Smart%20contract%20proof/Screenshot%202026-08-23%20214813.png)
+
+</details>
+
+<details>
+<summary><b>4. Blockchain Transaction Proof (Settlement)</b></summary>
+<br/>
+
+![Transaction 1](./Transaction%20proof/Screenshot%202026-08-23%20214459.png)
+![Transaction 2](./Transaction%20proof/Screenshot%202026-08-23%20214513.png)
+
+</details>
+
+<details>
+<summary><b>5. Unit Testing & CI/CD Pipeline</b></summary>
+<br/>
+
+![Test Pass](./test%20pass/image.png)
+
+</details>
+
+---
+
 ## 👨‍💻 Author
 
 **Riya Mukherjee**
