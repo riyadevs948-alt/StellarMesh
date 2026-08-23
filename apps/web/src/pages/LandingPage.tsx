@@ -8,7 +8,7 @@ export function LandingPage() {
     <div className="min-h-screen bg-bg-primary font-sans relative overflow-hidden">
       {/* Background Video */}
       <video 
-        src="https://www.pexels.com/download/video/15283125/" 
+        src="/hero-video.mp4" 
         autoPlay 
         loop 
         muted 
