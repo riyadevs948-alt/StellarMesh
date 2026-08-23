@@ -40,13 +40,24 @@ export function LandingPage() {
           Veyra brings offline payments to the Stellar network.
         </p>
         
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-4 mb-16">
           <button onClick={() => navigate('/dashboard')} className="btn-clay-red px-10 py-4 text-lg">
             Launch App <ArrowRight className="w-5 h-5 ml-2" />
           </button>
           <button onClick={() => navigate('/docs')} className="btn-clay-white px-10 py-4 text-lg">
             How It Works
           </button>
+        </div>
+
+        <div className="w-full max-w-5xl mx-auto rounded-[32px] overflow-hidden shadow-clay-lg border-[8px] border-white/60 relative">
+          <video 
+            src="https://www.pexels.com/download/video/15283125/" 
+            autoPlay 
+            loop 
+            muted 
+            playsInline
+            className="w-full h-auto object-cover aspect-video bg-black/5"
+          />
         </div>
       </section>
 
