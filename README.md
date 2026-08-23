@@ -9,7 +9,7 @@
 
 <p>
   <a href="https://drive.google.com/file/d/14xNo3Hgim6-jTYh7cGTRtieo-Wdv_iNU/view?usp=drivesdk">
-    <img src="https://img.shields.io/badge/Demo_Video-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="Demo Video" />
+    <img src="https://img.shields.io/badge/Demo_Video-4285F4?style=for-the-badge&logo=googledrive&logoColor=white" alt="Demo Video" />
   </a>
 </p>
 
