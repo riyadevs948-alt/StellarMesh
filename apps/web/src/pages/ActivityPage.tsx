@@ -1,5 +1,5 @@
 import { useAppStore } from '../store/app.store';
-import { Activity } from 'lucide-react';
+import { Activity, ExternalLink } from 'lucide-react';
 import { VoucherStatusBadge, EmptyState } from '../components/ui';
 import { stroopsToXlm } from '@stellar-mesh/voucher-protocol';
 import { formatDistanceToNow } from '../lib/utils';
@@ -46,6 +46,8 @@ export function ActivityPage() {
               ? LIFECYCLE_TO_DISPLAY[v.localStatus]
               : 'PENDING_SETTLEMENT') as any;
 
+            const explorerUrl = import.meta.env.VITE_EXPLORER_BASE_URL || 'https://stellar.expert/explorer/testnet';
+
             return (
               <div key={v.voucherId} className="card-hover flex items-center gap-4">
                 <div className="w-2 h-2 rounded-full bg-accent-blue shrink-0" />
@@ -55,6 +57,17 @@ export function ActivityPage() {
                       {stroopsToXlm(v.amount)} XLM
                     </span>
                     <VoucherStatusBadge status={displayStatus} />
+                    {v.settlementTxHash && (
+                      <a 
+                        href={`${explorerUrl}/tx/${v.settlementTxHash}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-text-muted hover:text-accent-blue transition-colors flex items-center gap-1 text-xs"
+                        title="View on Stellar Explorer"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    )}
                   </div>
                   <p className="text-xs text-text-muted mt-0.5">
                     {v.payer.slice(0, 8)}... → {v.payee.slice(0, 8)}...
