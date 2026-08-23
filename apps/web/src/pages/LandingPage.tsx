@@ -13,7 +13,7 @@ export function LandingPage() {
         loop 
         muted 
         playsInline
-        className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay pointer-events-none z-0"
+        className="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none z-0"
       />
 
       {/* Background Decorative Blobs */}
