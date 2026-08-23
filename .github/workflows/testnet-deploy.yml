@@ -30,7 +30,7 @@ jobs:
           key: ${{ runner.os }}-cargo-deploy
 
       - name: Install Stellar CLI
-        run: cargo install --locked stellar-cli --features opt
+        run: cargo install --locked stellar-cli
 
       - name: Setup Stellar identity
         env:
