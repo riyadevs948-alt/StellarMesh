@@ -874,15 +874,12 @@ VITE_MESH_CHANNEL_CONTRACT_ID=CB5WR2HOFDCCFVN5CRG47XBBDLXWXKEKDGRWTJIGINQS6YGNZL
 
 </details>
 
-<details>
-<summary><b>5. Unit Testing & CI/CD Pipeline</b></summary>
+### 5. Unit Testing & CI/CD Pipeline
 <br/>
 
-<img src="test pass/image.png" alt="Test Pass" width="800" />
+<img src="test%20pass/image.png" alt="Test Pass" width="800" />
 <br/><br/>
-<img src="apps/web/cicd proof/image.png" alt="CI/CD Pipeline" width="800" />
-
-</details>
+<img src="apps/web/cicd%20proof/image.png" alt="CI/CD Pipeline" width="800" />
 
 ---
 
