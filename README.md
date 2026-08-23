@@ -8,11 +8,11 @@ StellarMesh allows users to create cryptographically authorized payment vouchers
 
 ## 🌐 Live Demo
 
-> Deploy URL will appear here after CI/CD runs.
+> Add your live Vercel URL here (e.g., https://veyra.vercel.app)
 
 **Network:** Stellar Testnet  
-**MeshRegistry Contract:** *(deployed via CI — see `deployed-contracts.json`)*  
-**MeshChannel Contract:** *(deployed via CI — see `deployed-contracts.json`)*
+**MeshRegistry Contract:** [CCD6EYTGXBIY3ZCLSRNVOUSR2V7JOLHMCAB7FMQWJD7DD4AAAJJFOCNP](https://stellar.expert/explorer/testnet/contract/CCD6EYTGXBIY3ZCLSRNVOUSR2V7JOLHMCAB7FMQWJD7DD4AAAJJFOCNP)  
+**MeshChannel Contract:** [CB5WR2HOFDCCFVN5CRG47XBBDLXWXKEKDGRWTJIGINQS6YGNZLNIEOCA](https://stellar.expert/explorer/testnet/contract/CB5WR2HOFDCCFVN5CRG47XBBDLXWXKEKDGRWTJIGINQS6YGNZLNIEOCA)
 
 ---
 
