@@ -6,9 +6,19 @@ export function LandingPage() {
 
   return (
     <div className="min-h-screen bg-bg-primary font-sans relative overflow-hidden">
+      {/* Background Video */}
+      <video 
+        src="https://www.pexels.com/download/video/15283125/" 
+        autoPlay 
+        loop 
+        muted 
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay pointer-events-none z-0"
+      />
+
       {/* Background Decorative Blobs */}
-      <div className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] bg-[#a78bfa] rounded-full mix-blend-multiply filter blur-[150px] opacity-40 animate-float pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-[#ff6b6b] rounded-full mix-blend-multiply filter blur-[150px] opacity-30 animate-float-delay pointer-events-none"></div>
+      <div className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] bg-[#a78bfa] rounded-full mix-blend-multiply filter blur-[150px] opacity-40 animate-float pointer-events-none z-0"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-[#ff6b6b] rounded-full mix-blend-multiply filter blur-[150px] opacity-30 animate-float-delay pointer-events-none z-0"></div>
 
       {/* Nav */}
       <nav className="relative z-10 flex items-center justify-between px-8 py-5 border-b-2 border-white/20 backdrop-blur-md">
@@ -47,17 +57,6 @@ export function LandingPage() {
           <button onClick={() => navigate('/docs')} className="btn-clay-white px-10 py-4 text-lg">
             How It Works
           </button>
-        </div>
-
-        <div className="w-full max-w-5xl mx-auto rounded-[32px] overflow-hidden shadow-clay-lg border-[8px] border-white/60 relative">
-          <video 
-            src="https://www.pexels.com/download/video/15283125/" 
-            autoPlay 
-            loop 
-            muted 
-            playsInline
-            className="w-full h-auto object-cover aspect-video bg-black/5"
-          />
         </div>
       </section>
 
