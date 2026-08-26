@@ -5,7 +5,7 @@
 
 > *Eliminating connectivity barriers through cryptographic vouchers, QR-based exchange, and Stellar Soroban settlement — pay offline, settle on-chain*
 
-<p>🌐 <strong>Live Application: <a href="https://veyra-git-main-riya-8244.vercel.app/">https://veyra-git-main-riya-8244.vercel.app/</a></strong></p>
+<p>🌐 <strong>Live Application: <a href="https://veyra-ivory-chi.vercel.app/">https://veyra-ivory-chi.vercel.app/</a></strong></p>
 
 <p>
   <a href="https://drive.google.com/file/d/14xNo3Hgim6-jTYh7cGTRtieo-Wdv_iNU/view?usp=drivesdk">
